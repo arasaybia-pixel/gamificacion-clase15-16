@@ -1,801 +1,1220 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gestión de Proyectos Gamificados · Clases 15 y 16 · UNIR</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root {
-  --azul: #003DA5;
-  --azul2: #1a56c4;
-  --azul3: #0a2d7a;
-  --vino: #7B1D2E;
-  --vino2: #a02540;
-  --dorado: #F5A623;
-  --verde: #00A878;
-  --blanco: #FFFFFF;
-  --negro: #0a0a14;
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Inter',sans-serif;}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clases 15–16 · Gestión de Proyectos Gamificados · UNIR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #06091a;
+      --bg2:      #0a0d22;
+      --blue:     #003DA5;
+      --blue-l:   #4A9FFF;
+      --wine:     #7B1D2E;
+      --wine-l:   #FF6B8A;
+      --gold:     #F5A623;
+      --gold-l:   #FFD700;
+      --mint:     #00C9A7;
+      --mint-l:   #7FFFD4;
+      --violet:   #6C3FC5;
+      --violet-l: #C4A7FF;
+      --text:     #f1f5f9;
+      --muted:    #94a3b8;
+      --card:     rgba(255,255,255,0.04);
+      --border:   rgba(255,255,255,0.08);
+      --radius:   16px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; line-height: 1.7; overflow-x: hidden; }
 
-/* ─── NAVBAR ─── */
-.nav{
-  position:fixed;top:0;left:0;right:0;z-index:1000;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 24px;
-  background:rgba(0,0,0,0.82);
-  backdrop-filter:blur(14px);
-  border-bottom:1px solid rgba(255,255,255,0.08);
-}
-.nav-left{display:flex;align-items:center;gap:10px;}
-.nav-badge{background:var(--vino);color:#fff;font-size:10px;font-weight:800;padding:3px 12px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;}
-.nav-name{color:rgba(255,255,255,0.85);font-size:13px;font-weight:500;}
-.nav-right{display:flex;align-items:center;gap:10px;}
-.nav-idx{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;transition:.2s;}
-.nav-idx:hover{background:var(--azul);}
-.nav-arrow{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:.2s;}
-.nav-arrow:hover{background:var(--vino);}
-.nav-arrow:disabled{opacity:.25;cursor:not-allowed;}
-.nav-count{color:rgba(255,255,255,0.6);font-size:12px;min-width:44px;text-align:center;}
+    /* BARRA DE PROGRESO */
+    #progress { position: fixed; top: 0; left: 0; height: 4px; background: linear-gradient(90deg, var(--blue), var(--wine-l), var(--gold)); width: 0%; z-index: 9999; transition: width .1s; }
 
-/* ─── PROGRESS ─── */
-.pbar{position:fixed;top:54px;left:0;height:3px;background:linear-gradient(90deg,var(--vino),var(--dorado));transition:width .4s ease;z-index:999;}
+    /* NAVEGACIÓN */
+    nav { position: fixed; top: 4px; left: 0; right: 0; z-index: 1000; background: rgba(6,9,26,0.94); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+    .nav-brand { display: flex; align-items: center; gap: .75rem; }
+    .nav-pill { background: linear-gradient(135deg, var(--blue), var(--wine)); color: #fff; font-size: .65rem; font-weight: 800; padding: .25rem .65rem; border-radius: 6px; letter-spacing: .06em; text-transform: uppercase; }
+    .nav-sub { font-size: .78rem; color: var(--muted); font-weight: 500; }
+    .nav-links { display: flex; gap: .2rem; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: .75rem; font-weight: 600; padding: .35rem .75rem; border-radius: 8px; transition: all .2s; }
+    .nav-links a:hover, .nav-links a.active { color: #fff; background: rgba(0,61,165,.3); }
 
-/* ─── HINT ─── */
-.hint{
-  position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
-  background:rgba(255,255,255,0.1);backdrop-filter:blur(8px);
-  border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.7);
-  padding:7px 20px;border-radius:30px;font-size:11px;z-index:100;
-  animation:blink 2.5s infinite;pointer-events:none;
-}
-@keyframes blink{0%,100%{opacity:.7;}50%{opacity:.25;}}
+    /* HERO */
+    .hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; padding: 5rem 2rem 3rem; }
+    .hero-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; max-width: 1160px; width: 100%; position: relative; z-index: 2; }
+    .hero-img-wrap { border-radius: 20px; overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,.5); border: 1px solid rgba(255,255,255,.1); }
+    .hero-img-wrap img { width: 100%; height: 360px; object-fit: cover; display: block; }
+    @media(max-width:768px){ .hero-layout { grid-template-columns: 1fr; } .hero-img-wrap { display: none; } }
+    .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% -5%, rgba(0,61,165,.5) 0%, transparent 65%), radial-gradient(ellipse 55% 45% at 85% 85%, rgba(123,29,46,.3) 0%, transparent 60%), var(--bg); }
+    .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(0,61,165,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(0,61,165,.07) 1px, transparent 1px); background-size: 56px 56px; }
+    .hero-content { text-align: left; }
+    .hero-tag { display: inline-flex; align-items: center; gap: .5rem; background: rgba(0,61,165,.18); border: 1px solid rgba(0,61,165,.4); color: var(--blue-l); font-size: .72rem; font-weight: 700; padding: .4rem 1.1rem; border-radius: 100px; margin-bottom: 2rem; letter-spacing: .1em; text-transform: uppercase; }
+    .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.4rem, 6vw, 4.2rem); font-weight: 900; line-height: 1.1; margin-bottom: 1.5rem; }
+    .hero h1 .l1 { color: #fff; display: block; }
+    .hero h1 .l2 { background: linear-gradient(135deg, var(--blue-l), var(--mint)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: block; }
+    .hero h1 .l3 { background: linear-gradient(135deg, var(--wine-l), var(--gold-l)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: block; }
+    .hero-desc { font-size: 1rem; color: var(--muted); max-width: 540px; margin: 0 0 2rem; line-height: 1.8; }
+    .hero-meta { display: flex; justify-content: flex-start; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+    .hero-meta span { font-size: .8rem; color: var(--muted); }
+    .hero-meta strong { color: #fff; }
+    .ctas { display: flex; gap: 1rem; justify-content: flex-start; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: .5rem; padding: .85rem 1.8rem; border-radius: 10px; font-weight: 700; font-size: .88rem; text-decoration: none; transition: all .3s; cursor: pointer; border: none; }
+    .btn-a { background: linear-gradient(135deg, var(--blue), var(--mint)); color: #fff; }
+    .btn-a:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,61,165,.4); }
+    .btn-b { background: linear-gradient(135deg, var(--wine), var(--gold)); color: #fff; }
+    .btn-b:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(123,29,46,.4); }
+    .btn-c { background: var(--card); border: 1px solid var(--border); color: #fff; }
+    .btn-c:hover { background: rgba(255,255,255,.08); transform: translateY(-2px); }
+    .floats { position: absolute; inset: 0; pointer-events: none; }
+    .fc { position: absolute; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: .6rem 1.1rem; font-size: .78rem; font-weight: 700; backdrop-filter: blur(10px); animation: float 6s ease-in-out infinite; }
+    .fc:nth-child(1){top:18%;left:4%;color:var(--blue-l);border-color:rgba(74,159,255,.3);animation-delay:0s}
+    .fc:nth-child(2){top:22%;right:4%;color:var(--gold);border-color:rgba(245,166,35,.3);animation-delay:1.5s}
+    .fc:nth-child(3){bottom:28%;left:3%;color:var(--wine-l);border-color:rgba(255,107,138,.3);animation-delay:3s}
+    .fc:nth-child(4){bottom:22%;right:3%;color:var(--mint);border-color:rgba(0,201,167,.3);animation-delay:4.5s}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
 
-/* ─── INDEX OVERLAY ─── */
-.idx-overlay{
-  position:fixed;inset:0;z-index:998;
-  background:rgba(0,0,15,0.96);backdrop-filter:blur(20px);
-  display:none;flex-direction:column;align-items:center;justify-content:center;
-  padding:70px 20px 30px;
-}
-.idx-overlay.open{display:flex;}
-.idx-close{position:absolute;top:18px;right:22px;background:none;border:none;color:#fff;font-size:26px;cursor:pointer;opacity:.7;}
-.idx-close:hover{opacity:1;}
-.idx-title{color:#fff;font-family:'Playfair Display',serif;font-size:20px;margin-bottom:22px;}
-.idx-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;max-width:960px;width:100%;}
-.idx-item{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:12px 14px;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:10px;}
-.idx-item:hover{background:var(--vino);border-color:var(--vino);}
-.idx-num{background:var(--azul);color:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
-.idx-text{color:#fff;font-size:12px;line-height:1.3;}
-.idx-sub{font-size:9px;color:var(--dorado);font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:block;}
+    /* LAYOUT */
+    section { padding: 5rem 2rem; max-width: 1160px; margin: 0 auto; }
+    .divider { width: 100%; height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); }
+    .sec-label { display: inline-flex; align-items: center; gap: .5rem; font-size: .68rem; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; color: var(--blue-l); margin-bottom: .75rem; }
+    .sec-title { font-family: 'Playfair Display', serif; font-size: clamp(1.7rem, 3.5vw, 2.6rem); font-weight: 900; color: #fff; line-height: 1.2; margin-bottom: .75rem; }
+    .sec-sub { font-size: 1rem; color: var(--muted); max-width: 680px; margin-bottom: 2.5rem; line-height: 1.8; }
 
-/* ─── SLIDES ─── */
-.slides{width:100vw;height:100vh;position:relative;cursor:pointer;}
-.slide{position:absolute;inset:0;display:none;overflow:hidden;}
-.slide.on{display:block;}
-.bg{position:absolute;inset:0;background-size:cover;background-position:center;}
-.ov{position:absolute;inset:0;}
+    /* REVEAL */
+    .rv { opacity: 0; transform: translateY(28px); transition: all .7s ease; }
+    .rv.on { opacity: 1; transform: translateY(0); }
 
-/* ─── REVEAL ─── */
-.r{opacity:0;transform:translateY(28px);transition:opacity .55s ease,transform .55s ease;pointer-events:none;}
-.r.show{opacity:1;transform:none;pointer-events:auto;}
-.r.fl{transform:translateX(-36px);}
-.r.fl.show{transform:none;}
-.r.fr{transform:translateX(36px);}
-.r.fr.show{transform:none;}
-.r.zi{transform:scale(.75);}
-.r.zi.show{transform:scale(1);}
+    /* PROBLEMA */
+    .problema { background: linear-gradient(135deg, rgba(0,61,165,.14), rgba(123,29,46,.1)); border: 1px solid rgba(0,61,165,.3); border-radius: 20px; padding: 3rem; text-align: center; position: relative; overflow: hidden; margin-bottom: 2rem; }
+    .problema::before { content: '?'; position: absolute; top: -30px; right: 20px; font-size: 14rem; font-weight: 900; color: rgba(0,61,165,.06); font-family: 'Playfair Display', serif; line-height: 1; }
+    .problema blockquote { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.9rem); font-weight: 700; color: #fff; line-height: 1.5; position: relative; z-index: 1; }
+    .problema blockquote::before { content: '"'; color: var(--blue-l); font-size: 4rem; line-height: 0; vertical-align: -1.5rem; }
+    .problema blockquote::after { content: '"'; color: var(--blue-l); font-size: 4rem; line-height: 0; vertical-align: -1.5rem; }
+    .problema-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; }
+    .prob-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; text-align: left; }
+    .prob-card .pc-label { font-size: .65rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; margin-bottom: .5rem; }
+    .prob-card .pc-q { font-size: .95rem; font-weight: 600; color: #fff; line-height: 1.5; }
 
-/* ─── COMMON ATOMS ─── */
-.label{color:var(--dorado);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
-.htitle{font-family:'Playfair Display',serif;color:#fff;font-size:clamp(22px,3vw,40px);line-height:1.2;}
-.htitle span{color:var(--dorado);}
-.badge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;}
-.b-azul{background:var(--azul);color:#fff;}
-.b-vino{background:var(--vino);color:#fff;}
-.b-dorado{background:var(--dorado);color:#000;}
-.b-verde{background:var(--verde);color:#fff;}
-.chip{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.85);padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;}
-.card{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:16px;padding:20px;}
-.card:hover{background:rgba(255,255,255,0.11);}
-.tip{background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.3);border-radius:12px;padding:14px 18px;display:flex;align-items:flex-start;gap:10px;}
-.tip-icon{font-size:20px;flex-shrink:0;}
-.tip-text{color:rgba(255,255,255,0.82);font-size:12px;line-height:1.55;}
-.wrap{position:relative;z-index:10;width:100%;max-width:1120px;margin:0 auto;padding:68px 36px 28px;}
+    /* AGENDA */
+    .agenda-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1.25rem; }
+    .ag { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.75rem 1.4rem; transition: all .3s; position: relative; overflow: hidden; }
+    .ag::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+    .ag:nth-child(1)::before{background:linear-gradient(90deg,var(--blue),var(--mint))}
+    .ag:nth-child(2)::before{background:linear-gradient(90deg,var(--mint),var(--violet))}
+    .ag:nth-child(3)::before{background:linear-gradient(90deg,var(--wine),var(--gold))}
+    .ag:nth-child(4)::before{background:linear-gradient(90deg,var(--gold),var(--wine-l))}
+    .ag:nth-child(5)::before{background:linear-gradient(90deg,var(--violet),var(--blue))}
+    .ag:hover { transform: translateY(-4px); border-color: rgba(255,255,255,.14); }
+    .ag-num { font-size: 2.2rem; font-weight: 900; color: rgba(255,255,255,.07); font-family: 'Playfair Display', serif; line-height: 1; margin-bottom: .6rem; }
+    .ag-icon { font-size: 1.6rem; margin-bottom: .6rem; display: block; }
+    .ag-title { font-size: .88rem; font-weight: 700; color: #fff; }
 
-/* ─── SLIDE 0: PORTADA ─── */
-#s0 .bg{background:linear-gradient(135deg,#000820 0%,#001a6e 45%,#4a0015 100%);}
-#s0 .ov{background:radial-gradient(ellipse at 30% 50%,rgba(0,61,165,.28) 0%,transparent 55%),radial-gradient(ellipse at 72% 50%,rgba(123,29,46,.28) 0%,transparent 55%);}
-.portada{position:relative;z-index:10;text-align:center;padding:0 32px;max-width:860px;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;}
-.portada-badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;}
-.portada-h{font-family:'Playfair Display',serif;font-size:clamp(34px,5.5vw,68px);color:#fff;line-height:1.12;margin-bottom:14px;}
-.portada-h span{color:var(--dorado);}
-.portada-sub{color:rgba(255,255,255,.68);font-size:clamp(14px,1.8vw,18px);margin-bottom:28px;line-height:1.55;}
-.portada-chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:32px;}
-.portada-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
-.btn{padding:11px 26px;border-radius:30px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:.25s;text-decoration:none;display:inline-block;}
-.btn-vino{background:var(--vino);color:#fff;}
-.btn-vino:hover{background:var(--vino2);transform:translateY(-2px);}
-.btn-azul{background:var(--azul);color:#fff;}
-.btn-azul:hover{background:var(--azul2);transform:translateY(-2px);}
-.btn-out{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.35);}
-.btn-out:hover{border-color:var(--dorado);color:var(--dorado);}
-/* particles */
-.pts{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
-.pt{position:absolute;border-radius:50%;animation:fpt linear infinite;opacity:.12;}
-@keyframes fpt{0%{transform:translateY(100vh) rotate(0);opacity:0;}10%{opacity:.12;}90%{opacity:.12;}100%{transform:translateY(-80px) rotate(720deg);opacity:0;}}
+    /* OBJETIVOS */
+    .obj-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1.25rem; }
+    .obj { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.6rem; display: flex; gap: 1rem; align-items: flex-start; transition: all .3s; }
+    .obj:hover { transform: translateY(-3px); border-color: rgba(0,61,165,.3); }
+    .obj-ico { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0; }
+    .obj h4 { font-size: .88rem; font-weight: 700; color: #fff; margin-bottom: .35rem; }
+    .obj p { font-size: .81rem; color: var(--muted); line-height: 1.65; }
 
-/* ─── SLIDE 1: AGENDA ─── */
-#s1 .bg{background:linear-gradient(160deg,#001240 0%,#002080 55%,#3a0010 100%);}
-.agenda-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px;}
-.ag-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:22px;position:relative;overflow:hidden;}
-.ag-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
-.ag-c15::before{background:linear-gradient(90deg,var(--azul),var(--azul2));}
-.ag-c16::before{background:linear-gradient(90deg,var(--vino),var(--vino2));}
-.ag-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:3px 12px;border-radius:20px;display:inline-block;margin-bottom:10px;}
-.ag-b-azul{background:rgba(0,61,165,.3);color:#7eb3ff;border:1px solid rgba(0,61,165,.4);}
-.ag-b-vino{background:rgba(123,29,46,.3);color:#ff8fa0;border:1px solid rgba(123,29,46,.4);}
-.ag-title{color:#fff;font-family:'Playfair Display',serif;font-size:17px;margin-bottom:7px;}
-.ag-prob{color:rgba(255,255,255,.55);font-size:11px;font-style:italic;margin-bottom:14px;line-height:1.5;}
-.ag-list{list-style:none;display:flex;flex-direction:column;gap:5px;}
-.ag-li{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.8);font-size:11px;}
-.ag-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+    /* SPLIT IMAGE + TEXT */
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; margin-bottom: 3rem; }
+    .split.rev { direction: rtl; }
+    .split.rev > * { direction: ltr; }
+    .split-text h3 { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 900; color: #fff; margin-bottom: .9rem; line-height: 1.25; }
+    .split-text p { color: var(--muted); font-size: .93rem; line-height: 1.85; margin-bottom: .9rem; }
+    .split-text p strong { color: #fff; }
+    .split-img { border-radius: 18px; overflow: hidden; border: 1px solid var(--border); }
+    .split-img img { width: 100%; height: 300px; object-fit: cover; display: block; }
 
-/* ─── SLIDE 2: FASES VISUAL ─── */
-#s2 .bg{background-image:url('images/mindmap_project.jpg');}
-#s2 .ov{background:linear-gradient(135deg,rgba(0,18,64,.93) 0%,rgba(60,0,20,.88) 100%);}
-.fases-flow{display:flex;align-items:stretch;gap:0;margin-top:24px;overflow:hidden;}
-.fase{flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);padding:18px 14px;text-align:center;position:relative;transition:.3s;cursor:default;}
-.fase:hover{background:rgba(255,255,255,.13);}
-.fase::after{content:'▶';position:absolute;right:-12px;top:50%;transform:translateY(-50%);color:var(--dorado);font-size:14px;z-index:2;}
-.fase:last-child::after{display:none;}
-.fase-n{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;margin:0 auto 8px;}
-.fase-ico{font-size:26px;margin-bottom:8px;display:block;}
-.fase-t{color:#fff;font-size:12px;font-weight:700;margin-bottom:6px;line-height:1.3;}
-.fase-d{color:rgba(255,255,255,.6);font-size:10px;line-height:1.4;}
-.fases-img{margin-top:18px;border-radius:12px;overflow:hidden;max-height:160px;}
-.fases-img img{width:100%;height:160px;object-fit:cover;object-position:center top;}
+    /* FASES */
+    .fases-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin: 2rem 0; }
+    .fase { border-radius: 18px; padding: 1.6rem 1.2rem; cursor: pointer; transition: all .3s; text-align: center; position: relative; overflow: hidden; }
+    .fase:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,.4); }
+    .fase::after { content: '🔍 Ver detalle'; position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,.75); padding: 10px; font-size: 11px; font-weight: 600; color: white; transform: translateY(100%); transition: transform .3s; }
+    .fase:hover::after { transform: translateY(0); }
+    .fase-num { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; margin: 0 auto 12px; }
+    .fase-icon { font-size: 2.5rem; margin-bottom: .75rem; display: block; }
+    .fase-title { font-size: .82rem; font-weight: 700; margin-bottom: .4rem; line-height: 1.3; }
+    .fase-desc { font-size: .72rem; color: rgba(255,255,255,.65); line-height: 1.5; }
+    .f1 { background: linear-gradient(135deg, #003DA5, #0055D4); }
+    .f2 { background: linear-gradient(135deg, #6C3FC5, #8B5CF6); }
+    .f3 { background: linear-gradient(135deg, #00897B, #00C9A7); }
+    .f4 { background: linear-gradient(135deg, #E65100, #FF8A00); }
+    .f5 { background: linear-gradient(135deg, #7B1D2E, #C62A47); }
+    .fases-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1rem; }
+    .fchip { background: rgba(0,61,165,.15); border: 1px solid rgba(0,61,165,.3); color: var(--blue-l); padding: 4px 12px; border-radius: 20px; font-size: .72rem; font-weight: 600; }
 
-/* ─── SLIDE 3: PLATAFORMAS ─── */
-#s3 .bg{background-image:url('images/kanban_classroom.png');background-size:cover;background-position:center;}
-#s3 .ov{background:linear-gradient(135deg,rgba(0,8,50,.96) 0%,rgba(70,0,18,.94) 100%);}
-.plat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px;}
-.plat{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:14px;padding:18px;transition:.3s;cursor:pointer;position:relative;overflow:hidden;}
-.plat:hover{transform:translateY(-4px);background:rgba(255,255,255,.12);}
-.plat-logo{font-size:28px;margin-bottom:8px;display:block;}
-.plat-name{color:#fff;font-size:15px;font-weight:700;margin-bottom:3px;}
-.plat-type{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:2px 8px;border-radius:8px;display:inline-block;margin-bottom:8px;}
-.t-kanban{background:rgba(0,82,204,.3);color:#7eb3ff;}
-.t-wiki{background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);}
-.t-task{background:rgba(240,106,106,.3);color:#ffb3b3;}
-.t-visual{background:rgba(255,208,47,.3);color:#ffe680;}
-.t-all{background:rgba(123,104,238,.3);color:#c4b8ff;}
-.plat-desc{color:rgba(255,255,255,.6);font-size:11px;line-height:1.5;margin-bottom:10px;}
-.plat-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;}
-.plat-tag{background:rgba(255,255,255,.07);color:rgba(255,255,255,.5);font-size:9px;padding:2px 7px;border-radius:8px;}
-.plat-link{color:var(--dorado);font-size:11px;font-weight:700;text-decoration:none;}
-.plat-link:hover{text-decoration:underline;}
+    /* MODAL */
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.88); backdrop-filter: blur(16px); z-index: 1100; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.open { display: flex; }
+    .modal-box { background: linear-gradient(135deg, #0d1b3e 0%, #1a0a1a 100%); border: 1px solid rgba(255,255,255,.12); border-radius: 20px; max-width: 680px; width: 100%; overflow: hidden; animation: modalIn .3s ease; }
+    @keyframes modalIn { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: scale(1); } }
+    .modal-img { width: 100%; height: 260px; object-fit: cover; display: block; }
+    .modal-body { padding: 28px 32px 32px; }
+    .modal-title { font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 12px; color: white; }
+    .modal-text { font-size: 14px; line-height: 1.7; color: rgba(255,255,255,.8); margin-bottom: 16px; }
+    .modal-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+    .modal-tag { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; color: rgba(255,255,255,.7); }
+    .modal-close { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15); color: white; padding: 10px 24px; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all .2s; }
+    .modal-close:hover { background: rgba(255,255,255,.2); }
 
-/* ─── SLIDE 4: TRELLO EN ACCIÓN ─── */
-#s4 .bg{background-image:url('images/kanban_classroom.png');}
-#s4 .ov{background:linear-gradient(135deg,rgba(0,10,60,.93) 0%,rgba(60,0,20,.9) 100%);}
-.trello-board{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px;}
-.tcol{background:rgba(255,255,255,.06);border-radius:12px;padding:12px;border-top:3px solid;}
-.tcol:nth-child(1){border-color:#6B7280;}
-.tcol:nth-child(2){border-color:var(--azul2);}
-.tcol:nth-child(3){border-color:var(--dorado);}
-.tcol:nth-child(4){border-color:var(--verde);}
-.tcol-h{color:#fff;font-size:11px;font-weight:700;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;}
-.tcard{background:rgba(255,255,255,.08);border-radius:8px;padding:9px 11px;margin-bottom:7px;border-left:3px solid;cursor:pointer;transition:.2s;}
-.tcard:hover{background:rgba(255,255,255,.14);transform:translateX(3px);}
-.tcard-t{color:rgba(255,255,255,.9);font-size:11px;font-weight:600;margin-bottom:3px;}
-.tcard-m{color:rgba(255,255,255,.4);font-size:10px;}
-.quizziz-box{margin-top:16px;background:linear-gradient(135deg,rgba(0,61,165,.25),rgba(123,29,46,.25));border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:16px 20px;display:flex;align-items:center;gap:16px;}
-.qz-icon{font-size:36px;flex-shrink:0;}
-.qz-title{color:#fff;font-size:14px;font-weight:700;margin-bottom:4px;}
-.qz-desc{color:rgba(255,255,255,.65);font-size:11px;line-height:1.4;margin-bottom:8px;}
-.qz-btn{background:var(--vino);color:#fff;padding:7px 18px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;display:inline-block;transition:.2s;}
-.qz-btn:hover{background:var(--vino2);}
+    /* PLATAFORMAS */
+    .plat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 2rem; }
+    .plat { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.6rem; transition: all .3s; position: relative; overflow: hidden; }
+    .plat::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+    .plat:hover { transform: translateY(-4px); border-color: rgba(255,255,255,.15); }
+    .plat-logo { font-size: 2rem; margin-bottom: .75rem; display: block; }
+    .plat-name { font-size: 1rem; font-weight: 700; margin-bottom: .4rem; }
+    .plat-desc { font-size: .8rem; color: var(--muted); line-height: 1.6; margin-bottom: 1rem; }
+    .plat-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
+    .plat-tag { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); padding: 3px 8px; border-radius: 6px; font-size: .7rem; color: rgba(255,255,255,.6); }
+    .plat-link { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; font-weight: 600; text-decoration: none; padding: 7px 14px; border-radius: 8px; color: white; transition: all .2s; }
+    .pt-trello::before { background: #0052CC; }
+    .pt-notion::before { background: #000; }
+    .pt-asana::before { background: #F06A6A; }
+    .pt-monday::before { background: #FF3D57; }
+    .pt-miro::before { background: #FFD02F; }
+    .pt-click::before { background: #7B68EE; }
+    .lk-trello { background: rgba(0,82,204,.3); border: 1px solid rgba(0,82,204,.5); }
+    .lk-notion { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); }
+    .lk-asana { background: rgba(240,106,106,.25); border: 1px solid rgba(240,106,106,.4); }
+    .lk-monday { background: rgba(255,61,87,.25); border: 1px solid rgba(255,61,87,.4); }
+    .lk-miro { background: rgba(255,208,47,.15); border: 1px solid rgba(255,208,47,.3); color: #333 !important; }
+    .lk-click { background: rgba(123,104,238,.25); border: 1px solid rgba(123,104,238,.4); }
 
-/* ─── SLIDE 5: SEGUIMIENTO ─── */
-#s5 .bg{background-image:url('images/learning_dashboard.jpg');}
-#s5 .ov{background:linear-gradient(135deg,rgba(0,10,60,.92) 0%,rgba(60,0,20,.88) 100%);}
-.seg-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px;}
-.seg-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:16px;padding:20px;transition:.3s;}
-.seg-card:hover{background:rgba(255,255,255,.11);transform:translateY(-3px);}
-.seg-head{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
-.seg-ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
-.seg-name{color:#fff;font-size:15px;font-weight:700;}
-.seg-sub{color:rgba(255,255,255,.5);font-size:10px;}
-.seg-feats{display:flex;flex-direction:column;gap:5px;}
-.seg-feat{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.75);font-size:11px;}
-.seg-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+    /* KANBAN */
+    .kanban-board { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 1.5rem 0; }
+    .kanban-col { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); border-radius: 12px; padding: 12px; min-height: 220px; }
+    .kanban-header { font-size: .68rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 6px 10px; border-radius: 8px; margin-bottom: 10px; text-align: center; }
+    .kh-1 { background: rgba(0,61,165,.3); color: #7EB3FF; }
+    .kh-2 { background: rgba(108,63,197,.3); color: #C4A7FF; }
+    .kh-3 { background: rgba(0,137,123,.3); color: #80CBC4; }
+    .kh-4 { background: rgba(230,81,0,.3); color: #FFCC80; }
+    .kh-5 { background: rgba(123,29,46,.3); color: #FF8FA3; }
+    .kcard { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; font-size: .72rem; color: rgba(255,255,255,.8); line-height: 1.4; }
 
-/* ─── SLIDE 6: EVALUACIÓN ─── */
-#s6 .bg{background:linear-gradient(135deg,#000820 0%,#001a6e 50%,#4a0015 100%);}
-#s6 .ov{background:radial-gradient(ellipse at 30% 50%,rgba(0,61,165,.15) 0%,transparent 60%),radial-gradient(ellipse at 70% 50%,rgba(123,29,46,.15) 0%,transparent 60%);}
-.eval-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;}
-.eval-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:14px;padding:18px;text-align:center;transition:.3s;cursor:pointer;}
-.eval-card:hover{transform:translateY(-4px);background:rgba(255,255,255,.12);}
-.eval-ico{font-size:34px;margin-bottom:8px;display:block;}
-.eval-name{color:#fff;font-size:14px;font-weight:700;margin-bottom:5px;}
-.eval-desc{color:rgba(255,255,255,.6);font-size:11px;line-height:1.5;margin-bottom:8px;}
-.eval-uso{font-size:9px;padding:3px 10px;border-radius:10px;display:inline-block;font-weight:700;}
-.u-form{background:rgba(0,168,120,.25);color:#7fffd4;}
-.u-sum{background:rgba(0,61,165,.25);color:#7eb3ff;}
-.u-mix{background:rgba(245,166,35,.25);color:#ffe680;}
-/* Imagen de dashboard */
-.eval-img-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}
-.eval-img-box{border-radius:12px;overflow:hidden;height:120px;}
-.eval-img-box img{width:100%;height:100%;object-fit:cover;}
+    /* QUIZ */
+    .quiz-box { background: linear-gradient(135deg, rgba(0,61,165,.1), rgba(123,29,46,.08)); border: 1px solid rgba(0,61,165,.25); border-radius: 20px; padding: 2rem; margin-top: 2rem; }
+    .quiz-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+    .quiz-icon { font-size: 2rem; }
+    .quiz-header h3 { font-size: 1.1rem; font-weight: 700; }
+    .quiz-header p { font-size: .8rem; color: var(--muted); }
+    .quiz-q { display: none; }
+    .quiz-q.active { display: block; }
+    .quiz-qnum { font-size: .7rem; color: var(--gold); font-weight: 700; margin-bottom: .5rem; }
+    .quiz-qtext { font-size: .95rem; font-weight: 600; margin-bottom: 1rem; line-height: 1.5; }
+    .quiz-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .qopt { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 10px; padding: 10px 14px; cursor: pointer; font-size: .82rem; color: rgba(255,255,255,.8); transition: all .2s; text-align: left; }
+    .qopt:hover { background: rgba(0,61,165,.2); border-color: var(--blue); }
+    .qopt.correct { background: rgba(0,201,167,.2); border-color: var(--mint); color: var(--mint); }
+    .qopt.wrong { background: rgba(255,59,59,.2); border-color: #FF3B3B; color: #FF8080; }
+    .quiz-fb { font-size: .82rem; margin-top: .75rem; padding: 10px 14px; border-radius: 8px; display: none; }
+    .quiz-fb.show { display: block; }
+    .quiz-fb.ok { background: rgba(0,201,167,.15); border: 1px solid rgba(0,201,167,.3); color: var(--mint); }
+    .quiz-fb.ko { background: rgba(255,59,59,.15); border: 1px solid rgba(255,59,59,.3); color: #FF8080; }
+    .quiz-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
+    .quiz-prog { height: 4px; background: rgba(255,255,255,.1); border-radius: 2px; margin-bottom: 1rem; overflow: hidden; }
+    .quiz-prog-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--mint)); border-radius: 2px; transition: width .4s; }
+    .quiz-score { display: none; text-align: center; padding: 1.5rem; }
+    .quiz-score.show { display: block; }
+    .quiz-score-num { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 900; color: var(--gold); }
+    .quiz-score-text { font-size: .9rem; color: var(--muted); margin-top: .5rem; }
 
-/* ─── SLIDE 7: ACTIVIDAD ─── */
-#s7 .bg{background:linear-gradient(135deg,#000820 0%,#001a6e 40%,#4a0015 100%);}
-#s7 .ov{background:radial-gradient(ellipse at center,rgba(123,29,46,.18) 0%,transparent 70%);}
-.act-wrap{position:relative;z-index:10;width:100%;max-width:1060px;margin:0 auto;padding:68px 36px 28px;}
-.act-header{text-align:center;margin-bottom:22px;}
-.act-timer{display:inline-flex;align-items:center;gap:8px;background:rgba(245,166,35,.15);border:1px solid rgba(245,166,35,.4);border-radius:30px;padding:7px 18px;color:var(--dorado);font-size:13px;font-weight:700;margin-bottom:14px;}
-.act-htitle{font-family:'Playfair Display',serif;color:#fff;font-size:clamp(20px,2.8vw,34px);margin-bottom:0;}
-/* VIDEO motivación */
-.act-video-row{display:grid;grid-template-columns:1fr 1.4fr;gap:16px;margin-bottom:16px;}
-.act-video-box{border-radius:14px;overflow:hidden;background:#000;aspect-ratio:16/9;}
-.act-video-box iframe{width:100%;height:100%;border:none;}
-.act-motiv{background:linear-gradient(135deg,rgba(123,29,46,.2),rgba(0,61,165,.2));border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:18px;display:flex;flex-direction:column;justify-content:center;}
-.act-motiv-title{color:var(--dorado);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
-.act-motiv-text{color:rgba(255,255,255,.8);font-size:12px;line-height:1.6;margin-bottom:10px;}
-.act-motiv-quote{border-left:3px solid var(--vino);padding-left:12px;color:rgba(255,255,255,.7);font-style:italic;font-size:12px;line-height:1.5;}
-/* Pasos */
-.act-body{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.act-block{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:18px;}
-.act-block-h{color:var(--dorado);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
-.act-steps{list-style:none;display:flex;flex-direction:column;gap:7px;}
-.act-step{display:flex;align-items:flex-start;gap:9px;color:rgba(255,255,255,.8);font-size:11px;line-height:1.4;}
-.act-sn{background:var(--vino);color:#fff;width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px;}
-/* Rúbrica mini */
-.rubrica{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;overflow:hidden;margin-top:14px;}
-.rubrica table{width:100%;border-collapse:collapse;font-size:10.5px;}
-.rubrica th{background:rgba(0,61,165,.35);color:rgba(255,255,255,.9);padding:7px 10px;text-align:left;font-weight:700;}
-.rubrica td{padding:6px 10px;color:rgba(255,255,255,.7);border-bottom:1px solid rgba(255,255,255,.06);}
-.rubrica tr:last-child td{border-bottom:none;}
-.rubrica tr:hover td{background:rgba(255,255,255,.04);}
+    /* SEGUIMIENTO */
+    .seg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin: 1.5rem 0; }
+    .seg { border-radius: 18px; padding: 1.75rem; position: relative; overflow: hidden; }
+    .seg::before { content: ''; position: absolute; top: -40px; right: -40px; width: 120px; height: 120px; border-radius: 50%; opacity: .15; }
+    .sg-forms { background: linear-gradient(135deg, #1a2a5e, #0d1b3e); border: 1px solid rgba(0,61,165,.3); }
+    .sg-forms::before { background: var(--blue); }
+    .sg-classcraft { background: linear-gradient(135deg, #2a1a5e, #1a0d3e); border: 1px solid rgba(108,63,197,.3); }
+    .sg-classcraft::before { background: var(--violet); }
+    .sg-socrative { background: linear-gradient(135deg, #1a3a2a, #0d2e1b); border: 1px solid rgba(0,137,123,.3); }
+    .sg-socrative::before { background: var(--mint); }
+    .sg-moodle { background: linear-gradient(135deg, #3a1a1a, #2e0d0d); border: 1px solid rgba(123,29,46,.3); }
+    .sg-moodle::before { background: var(--wine); }
+    .seg-icon { font-size: 2.2rem; margin-bottom: .75rem; display: block; }
+    .seg-name { font-size: 1.1rem; font-weight: 700; margin-bottom: .3rem; }
+    .seg-tagline { font-size: .78rem; color: rgba(255,255,255,.5); margin-bottom: .9rem; font-style: italic; }
+    .seg-features { list-style: none; margin-bottom: 1rem; }
+    .seg-features li { font-size: .78rem; color: rgba(255,255,255,.7); padding: .28rem 0 .28rem 1.3rem; position: relative; }
+    .seg-features li::before { content: '→'; position: absolute; left: 0; color: var(--gold); font-weight: 700; }
+    .seg-link { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; font-weight: 600; text-decoration: none; padding: 8px 16px; border-radius: 8px; color: white; transition: all .2s; }
+    .sl-forms { background: rgba(0,61,165,.3); border: 1px solid rgba(0,61,165,.5); }
+    .sl-classcraft { background: rgba(108,63,197,.3); border: 1px solid rgba(108,63,197,.5); }
+    .sl-socrative { background: rgba(0,137,123,.3); border: 1px solid rgba(0,137,123,.5); }
+    .sl-moodle { background: rgba(123,29,46,.3); border: 1px solid rgba(123,29,46,.5); }
 
-/* ─── SLIDE 8: CIERRE ─── */
-#s8 .bg{background:linear-gradient(135deg,#000820 0%,#001240 50%,#3a0010 100%);}
-#s8 .ov{background:radial-gradient(ellipse at 50% 30%,rgba(0,61,165,.22) 0%,transparent 55%),radial-gradient(ellipse at 50% 70%,rgba(123,29,46,.22) 0%,transparent 55%);}
-.cierre{position:relative;z-index:10;text-align:center;max-width:780px;margin:0 auto;padding:0 32px;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;}
-.cierre-ico{font-size:56px;margin-bottom:16px;display:block;}
-.cierre-h{font-family:'Playfair Display',serif;color:#fff;font-size:clamp(26px,4vw,46px);line-height:1.2;margin-bottom:16px;}
-.cierre-h span{color:var(--dorado);}
-.cierre-quote{background:rgba(255,255,255,.06);border-left:4px solid var(--vino);border-radius:0 12px 12px 0;padding:14px 18px;color:rgba(255,255,255,.8);font-size:14px;font-style:italic;line-height:1.6;margin-bottom:22px;text-align:left;}
-.cierre-next{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:18px 22px;margin-bottom:24px;text-align:left;width:100%;}
-.cierre-next-lbl{color:var(--dorado);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
-.cierre-next-t{color:#fff;font-size:15px;font-weight:700;margin-bottom:4px;}
-.cierre-next-d{color:rgba(255,255,255,.6);font-size:12px;}
-.cierre-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
-</style>
+    /* EVALUACIÓN */
+    .eval-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin: 1.5rem 0; }
+    .eval { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.6rem; transition: all .3s; }
+    .eval:hover { transform: translateY(-4px); }
+    .eval-icon { font-size: 2.2rem; margin-bottom: .75rem; display: block; }
+    .eval-title { font-size: .9rem; font-weight: 700; margin-bottom: .5rem; }
+    .eval-desc { font-size: .78rem; color: var(--muted); line-height: 1.65; margin-bottom: .75rem; }
+    .eval-tool { font-size: .72rem; font-weight: 600; color: var(--gold); }
+    .eval-link { font-size: .72rem; font-weight: 600; color: var(--blue-l); text-decoration: none; display: block; margin-top: .4rem; }
+    .eval-link:hover { text-decoration: underline; }
+
+    /* TALLER */
+    .taller-box { background: linear-gradient(135deg, rgba(0,61,165,.12), rgba(123,29,46,.1)); border: 1px solid rgba(245,166,35,.25); border-radius: 20px; overflow: hidden; margin-bottom: 2rem; }
+    .taller-header { background: linear-gradient(135deg, var(--blue), var(--wine)); padding: 2rem; display: flex; align-items: center; gap: 1.5rem; }
+    .taller-header-icon { font-size: 3rem; }
+    .taller-header h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; color: #fff; }
+    .taller-header p { font-size: .85rem; color: rgba(255,255,255,.75); margin-top: .3rem; }
+    .taller-body { padding: 2rem; }
+    .taller-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+    .taller-col h4 { font-size: .85rem; font-weight: 700; color: var(--gold); margin-bottom: .75rem; display: flex; align-items: center; gap: .5rem; }
+    .taller-steps { list-style: none; }
+    .taller-steps li { font-size: .82rem; color: rgba(255,255,255,.75); padding: .5rem 0 .5rem 1.8rem; position: relative; border-bottom: 1px solid rgba(255,255,255,.05); }
+    .taller-steps li:last-child { border-bottom: none; }
+    .taller-steps li::before { content: attr(data-n); position: absolute; left: 0; width: 20px; height: 20px; background: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .65rem; font-weight: 800; color: white; top: .55rem; }
+    .video-btn { display: inline-flex; align-items: center; gap: .75rem; background: linear-gradient(135deg, #FF0000, #CC0000); color: white; padding: 1rem 2rem; border-radius: 12px; font-weight: 700; font-size: .9rem; text-decoration: none; transition: all .3s; margin-bottom: 1.5rem; }
+    .video-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(255,0,0,.35); }
+    .video-btn .vb-icon { font-size: 1.5rem; }
+
+    /* CHECKLIST */
+    .checklist-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0; }
+    .checklist-col { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+    .checklist-col h3 { font-size: .85rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: .5rem; color: var(--gold); }
+    .check-item { display: flex; align-items: flex-start; gap: .75rem; padding: .6rem 0; border-bottom: 1px solid rgba(255,255,255,.05); cursor: pointer; }
+    .check-item:last-child { border-bottom: none; }
+    .check-box { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.2); border-radius: 4px; flex-shrink: 0; margin-top: 2px; transition: all .2s; display: flex; align-items: center; justify-content: center; font-size: .7rem; }
+    .check-item.checked .check-box { background: var(--mint); border-color: var(--mint); color: #0a0e1a; }
+    .check-item.checked .check-text { text-decoration: line-through; color: rgba(255,255,255,.35); }
+    .check-text { font-size: .78rem; color: rgba(255,255,255,.75); line-height: 1.5; }
+    .cl-progress { margin-top: 1rem; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 1rem 1.2rem; display: flex; align-items: center; gap: 1rem; }
+    .cl-bar { flex: 1; height: 8px; background: rgba(255,255,255,.1); border-radius: 4px; overflow: hidden; }
+    .cl-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--mint)); border-radius: 4px; transition: width .4s; }
+    .cl-pct { font-size: .82rem; font-weight: 700; color: var(--mint); white-space: nowrap; }
+
+    /* QUOTE */
+    .quote { background: linear-gradient(135deg, rgba(0,61,165,.1), rgba(123,29,46,.07)); border-left: 4px solid var(--blue-l); border-radius: 0 12px 12px 0; padding: 1.5rem 2rem; margin: 2rem 0; }
+    .quote blockquote { font-size: 1rem; color: #fff; font-style: italic; line-height: 1.75; }
+    .quote cite { display: block; margin-top: .65rem; font-size: .8rem; color: var(--blue-l); font-style: normal; font-weight: 600; }
+
+    /* CHIPS ROW */
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 1.25rem 0; }
+    .chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 13px; border-radius: 20px; font-size: .72rem; font-weight: 600; }
+    .ch-blue { background: rgba(0,61,165,.2); border: 1px solid rgba(0,61,165,.4); color: var(--blue-l); }
+    .ch-wine { background: rgba(123,29,46,.2); border: 1px solid rgba(123,29,46,.4); color: var(--wine-l); }
+    .ch-gold { background: rgba(245,166,35,.15); border: 1px solid rgba(245,166,35,.35); color: var(--gold); }
+    .ch-mint { background: rgba(0,201,167,.15); border: 1px solid rgba(0,201,167,.35); color: var(--mint); }
+    .ch-violet { background: rgba(108,63,197,.2); border: 1px solid rgba(108,63,197,.4); color: var(--violet-l); }
+
+    /* EJEMPLO RESUELTO */
+    .ejemplo-header { background: linear-gradient(135deg, var(--wine), var(--blue)); border-radius: 16px 16px 0 0; padding: 1.75rem 2rem; }
+    .ejemplo-header h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; color: #fff; }
+    .ejemplo-header p { font-size: .85rem; color: rgba(255,255,255,.75); margin-top: .3rem; }
+    .ejemplo-body { background: rgba(255,255,255,.03); border: 1px solid var(--border); border-top: none; border-radius: 0 0 16px 16px; padding: 2rem; }
+    .ejemplo-section { margin-bottom: 1.5rem; }
+    .ejemplo-section h4 { font-size: .85rem; font-weight: 700; color: var(--gold); margin-bottom: .75rem; display: flex; align-items: center; gap: .5rem; }
+    .ejemplo-section p, .ejemplo-section li { font-size: .82rem; color: rgba(255,255,255,.75); line-height: 1.7; }
+    .ejemplo-section ul { list-style: none; padding: 0; }
+    .ejemplo-section ul li { padding: .3rem 0 .3rem 1.5rem; position: relative; }
+    .ejemplo-section ul li::before { content: '✓'; position: absolute; left: 0; color: var(--mint); font-weight: 700; }
+
+    /* CIERRE */
+    .cierre { background: linear-gradient(135deg, #5a0a1a 0%, #7B1D2E 30%, #003DA5 70%, #001a5e 100%); border-radius: 24px; padding: 4rem 3rem; text-align: center; position: relative; overflow: hidden; margin-top: 2rem; }
+    .cierre::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(245,166,35,.08) 0%, transparent 60%); pointer-events: none; }
+    .cierre-icon { font-size: 4rem; margin-bottom: 1.25rem; display: block; position: relative; z-index: 2; }
+    .cierre h2 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 900; line-height: 1.2; margin-bottom: 1.25rem; position: relative; z-index: 2; }
+    .cierre-quote { font-size: 1rem; color: rgba(255,255,255,.75); line-height: 1.8; max-width: 600px; margin: 0 auto 2rem; font-style: italic; position: relative; z-index: 2; }
+    .cierre-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0; position: relative; z-index: 2; }
+    .cc { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: 14px; padding: 1.25rem 1rem; text-align: center; }
+    .cc-icon { font-size: 1.75rem; margin-bottom: .5rem; display: block; }
+    .cc-text { font-size: .8rem; color: rgba(255,255,255,.75); line-height: 1.5; }
+    .next-tema { background: rgba(255,255,255,.06); border: 1px solid rgba(245,166,35,.3); border-radius: 14px; padding: 1rem 1.5rem; display: inline-flex; align-items: center; gap: 1rem; margin-top: 1.5rem; position: relative; z-index: 2; }
+    .nt-icon { font-size: 1.75rem; }
+    .nt-text { text-align: left; }
+    .nt-label { font-size: .65rem; color: var(--gold); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin-bottom: .25rem; }
+    .nt-title { font-size: .9rem; font-weight: 700; color: #fff; }
+
+    /* RECURSOS */
+    .recursos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+    .rec { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.4rem; transition: all .3s; }
+    .rec:hover { transform: translateY(-3px); border-color: rgba(255,255,255,.15); }
+    .rec-icon { font-size: 1.75rem; margin-bottom: .6rem; display: block; }
+    .rec-title { font-size: .88rem; font-weight: 700; margin-bottom: .4rem; }
+    .rec-desc { font-size: .78rem; color: var(--muted); line-height: 1.6; margin-bottom: .75rem; }
+    .rec-link { font-size: .75rem; font-weight: 600; color: var(--blue-l); text-decoration: none; }
+    .rec-link:hover { text-decoration: underline; }
+
+    /* RESPONSIVE */
+    @media(max-width:900px){
+      .fases-grid{grid-template-columns:repeat(3,1fr)}
+      .plat-grid{grid-template-columns:1fr 1fr}
+      .kanban-board{grid-template-columns:repeat(3,1fr)}
+      .seg-grid,.taller-grid,.checklist-grid,.cierre-cards{grid-template-columns:1fr}
+      .eval-grid{grid-template-columns:1fr 1fr}
+      .split{grid-template-columns:1fr}
+      .quiz-opts{grid-template-columns:1fr}
+      .split.rev{direction:ltr}
+    }
+  </style>
 </head>
 <body>
 
-<!-- NAVBAR -->
-<nav class="nav">
-  <div class="nav-left">
-    <span class="nav-badge">Clases 15–16</span>
-    <span class="nav-name">Gestión de Proyectos Gamificados · UNIR</span>
+<!-- BARRA DE PROGRESO -->
+<div id="progress"></div>
+
+<!-- NAVEGACIÓN -->
+<nav>
+  <div class="nav-brand">
+    <span class="nav-pill">Clases 15–16</span>
+    <span class="nav-sub">Tema 8 · Gestión de Proyectos Gamificados · UNIR</span>
   </div>
-  <div class="nav-right">
-    <button class="nav-idx" onclick="toggleIdx()">☰ Índice</button>
-    <button class="nav-arrow" id="prevBtn" onclick="prev()" disabled>‹</button>
-    <span class="nav-count" id="cnt">1 / 9</span>
-    <button class="nav-arrow" id="nextBtn" onclick="next()">›</button>
+  <div class="nav-links">
+    <a href="#problema">Problema</a>
+    <a href="#objetivos">Objetivos</a>
+    <a href="#fases">Fases</a>
+    <a href="#plataformas">Plataformas</a>
+    <a href="#seguimiento">Seguimiento</a>
+    <a href="#taller">Taller</a>
   </div>
 </nav>
 
-<div class="pbar" id="pbar" style="width:11.1%"></div>
-<div class="hint" id="hint">Haz clic para revelar · Flechas para navegar</div>
-
-<!-- INDEX OVERLAY -->
-<div class="idx-overlay" id="idxOverlay">
-  <button class="idx-close" onclick="toggleIdx()">✕</button>
-  <div class="idx-title">Navega por las Clases 15 y 16</div>
-  <div class="idx-grid">
-    <div class="idx-item" onclick="go(0);toggleIdx()"><div class="idx-num">0</div><div class="idx-text">Portada</div></div>
-    <div class="idx-item" onclick="go(1);toggleIdx()"><div class="idx-num">1</div><div class="idx-text"><span class="idx-sub">Agenda</span>Mapa de las dos clases</div></div>
-    <div class="idx-item" onclick="go(2);toggleIdx()"><div class="idx-num">2</div><div class="idx-text"><span class="idx-sub">Clase 15</span>5 fases del proyecto gamificado</div></div>
-    <div class="idx-item" onclick="go(3);toggleIdx()"><div class="idx-num">3</div><div class="idx-text"><span class="idx-sub">Clase 15</span>Plataformas de gestión</div></div>
-    <div class="idx-item" onclick="go(4);toggleIdx()"><div class="idx-num">4</div><div class="idx-text"><span class="idx-sub">Clase 15</span>Trello en acción + Quizizz</div></div>
-    <div class="idx-item" onclick="go(5);toggleIdx()"><div class="idx-num">5</div><div class="idx-text"><span class="idx-sub">Clase 16</span>Seguimiento del alumnado</div></div>
-    <div class="idx-item" onclick="go(6);toggleIdx()"><div class="idx-num">6</div><div class="idx-text"><span class="idx-sub">Clase 16</span>Evaluación gamificada</div></div>
-    <div class="idx-item" onclick="go(7);toggleIdx()"><div class="idx-num">7</div><div class="idx-text"><span class="idx-sub">Taller</span>Actividad grupal · 20 min</div></div>
-    <div class="idx-item" onclick="go(8);toggleIdx()"><div class="idx-num">8</div><div class="idx-text">Cierre y próxima clase</div></div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════ SLIDES -->
-<div class="slides" onclick="handleClick()">
-
-<!-- ── SLIDE 0: PORTADA ── -->
-<div class="slide on" id="s0">
-  <div class="bg"></div><div class="ov"></div>
-  <div class="pts" id="pts0"></div>
-  <div class="portada">
-    <div class="r portada-badges" data-s="0" data-o="0">
-      <span class="badge b-azul">Máster en Gamificación Educativa</span>
-      <span class="badge b-vino">UNIR</span>
-      <span class="badge b-dorado">Tema 8</span>
-    </div>
-    <h1 class="r portada-h" data-s="0" data-o="1">Gestión de <span>Proyectos</span><br>Gamificados</h1>
-    <p class="r portada-sub" data-s="0" data-o="2">Clases 15 y 16 · Organización, seguimiento y evaluación<br>de experiencias de aprendizaje gamificadas</p>
-    <div class="r portada-chips" data-s="0" data-o="3">
-      <span class="chip">📋 Gestión de tareas</span>
-      <span class="chip">📊 Seguimiento del progreso</span>
-      <span class="chip">🎯 Evaluación formativa</span>
-      <span class="chip">🛠️ Herramientas digitales</span>
-      <span class="chip">🚀 Viabilidad educativa</span>
-    </div>
-    <div class="r portada-btns" data-s="0" data-o="4">
-      <button class="btn btn-vino" onclick="go(2);event.stopPropagation()">📋 Clase 15: Organización</button>
-      <button class="btn btn-azul" onclick="go(5);event.stopPropagation()">📊 Clase 16: Seguimiento</button>
-      <button class="btn btn-out" onclick="go(7);event.stopPropagation()">🎯 Taller grupal</button>
+<!-- MODAL FASES -->
+<div class="modal-overlay" id="faseModal">
+  <div class="modal-box">
+    <img class="modal-img" id="modalImg" src="" alt="" />
+    <div class="modal-body">
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-text" id="modalText"></div>
+      <div class="modal-tags" id="modalTags"></div>
+      <button class="modal-close" onclick="document.getElementById('faseModal').classList.remove('open')">✕ Cerrar</button>
     </div>
   </div>
 </div>
 
-<!-- ── SLIDE 1: AGENDA ── -->
-<div class="slide" id="s1">
-  <div class="bg"></div>
-  <div class="wrap">
-    <div class="r" data-s="1" data-o="0" style="text-align:center;margin-bottom:18px;">
-      <div class="label">Mapa de ruta</div>
-      <h2 class="htitle">Dos clases, un mismo objetivo:<br><span>gestionar con intención pedagógica</span></h2>
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="floats">
+    <div class="fc">🗺️ 5 Fases del proyecto</div>
+    <div class="fc">🛠️ 6 Plataformas de gestión</div>
+    <div class="fc">📊 Seguimiento sin interrumpir</div>
+    <div class="fc">🏆 Evaluación gamificada</div>
+  </div>
+  <div class="hero-layout">
+    <div class="hero-content rv">
+      <div class="hero-tag">🎓 UNIR · Máster en Gamificación Educativa · Tema 8</div>
+      <h1>
+        <span class="l1">Gestión de</span>
+        <span class="l2">Proyectos</span>
+        <span class="l3">Gamificados</span>
+      </h1>
+      <p class="hero-desc">Organiza, implementa y evalúa experiencias gamificadas sostenibles, medibles e impactantes. De la idea al aula, con metodología y herramientas digitales de vanguardia.</p>
+      <div class="hero-meta">
+        <span>📅 <strong>Clases 15 y 16</strong></span>
+        <span>⏱ <strong>120 min</strong></span>
+        <span>🎯 <strong>Tema 8</strong></span>
+        <span>🏛 <strong>UNIR</strong></span>
+      </div>
+      <div class="ctas">
+        <a href="#fases" class="btn btn-a">🗺️ Las 5 fases</a>
+        <a href="#plataformas" class="btn btn-b">🛠️ Plataformas</a>
+        <a href="#taller" class="btn btn-c">🔥 Taller grupal</a>
+      </div>
     </div>
-    <div class="agenda-grid">
-      <div class="r ag-card ag-c15 fl" data-s="1" data-o="1">
-        <span class="ag-badge ag-b-azul">Clase 15 · 60 min</span>
-        <h3 class="ag-title">¿Cómo organizo mi proyecto gamificado?</h3>
-        <p class="ag-prob">Problema: ¿Cómo puedo organizar todas las fases de un proyecto gamificado para asegurar su viabilidad, impacto educativo y correcta implementación?</p>
-        <ul class="ag-list">
-          <li class="ag-li"><span class="ag-dot" style="background:var(--azul2)"></span>Introducción y objetivos del Tema 8</li>
-          <li class="ag-li"><span class="ag-dot" style="background:var(--azul2)"></span>5 fases de planificación de un proyecto gamificado</li>
-          <li class="ag-li"><span class="ag-dot" style="background:var(--azul2)"></span>Plataformas de gestión (Trello, Notion, Asana, Miro...)</li>
-          <li class="ag-li"><span class="ag-dot" style="background:var(--azul2)"></span>Caso práctico: La Liga del Cálculo Mental</li>
-          <li class="ag-li"><span class="ag-dot" style="background:var(--azul2)"></span>Quizizz de comprobación + Actividad grupal</li>
-        </ul>
-      </div>
-      <div class="r ag-card ag-c16 fr" data-s="1" data-o="2">
-        <span class="ag-badge ag-b-vino">Clase 16 · 60 min</span>
-        <h3 class="ag-title">¿Cómo sé si mi alumnado está aprendiendo?</h3>
-        <p class="ag-prob">Problema: ¿Cómo puedo saber si mi alumnado está progresando, participando y aprendiendo durante una experiencia gamificada sin interrumpir el juego?</p>
-        <ul class="ag-list">
-          <li class="ag-li"><span class="ag-dot" style="background:var(--vino2)"></span>Herramientas para el seguimiento del progreso</li>
-          <li class="ag-li"><span class="ag-dot" style="background:var(--vino2)"></span>Evaluación formativa sin romper la narrativa</li>
-          <li class="ag-li"><span class="ag-dot" style="background:var(--vino2)"></span>Dashboards y analíticas de aprendizaje</li>
-          <li class="ag-li"><span class="ag-dot" style="background:var(--vino2)"></span>Rúbricas gamificadas y portfolios digitales</li>
-          <li class="ag-li"><span class="ag-dot" style="background:var(--vino2)"></span>Actividad grupal: sistema de evaluación invisible</li>
-        </ul>
-      </div>
+    <div class="hero-img-wrap rv">
+      <img src="images/gamification_strategies.jpg" alt="Estrategias de gamificación educativa" />
     </div>
   </div>
 </div>
 
-<!-- ── SLIDE 2: FASES ── -->
-<div class="slide" id="s2">
-  <div class="bg"></div><div class="ov"></div>
-  <div class="wrap">
-    <div class="r" data-s="2" data-o="0" style="text-align:center;margin-bottom:18px;">
-      <div class="label">Clase 15 · Planificación</div>
-      <h2 class="htitle">Las <span>5 fases</span> de un proyecto gamificado</h2>
-    </div>
-    <div class="r fases-flow" data-s="2" data-o="1">
-      <div class="fase">
-        <span class="fase-ico">🎯</span>
-        <div class="fase-n" style="background:var(--azul)">1</div>
-        <div class="fase-t">Análisis y diagnóstico</div>
-        <div class="fase-d">Contexto, necesidades del alumnado, objetivos de aprendizaje y recursos disponibles</div>
+<div class="divider"></div>
+
+<!-- PROBLEMA -->
+<section id="problema">
+  <div class="sec-label rv">❓ El problema de hoy</div>
+  <h2 class="sec-title rv">Dos preguntas que lo cambian todo</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center;margin-bottom:2rem" class="rv">
+    <div>
+      <div class="problema" style="margin-bottom:1.5rem">
+        <blockquote style="font-size:1rem;line-height:1.7">¿Cómo organizo todas las fases de un proyecto gamificado para asegurar su viabilidad, impacto educativo e implementación real en el aula?</blockquote>
       </div>
-      <div class="fase">
-        <span class="fase-ico">🗺️</span>
-        <div class="fase-n" style="background:#5b21b6">2</div>
-        <div class="fase-t">Diseño narrativo y mecánicas</div>
-        <div class="fase-d">Historia, misiones, roles, recompensas, mecánicas y dinámicas de juego</div>
-      </div>
-      <div class="fase">
-        <span class="fase-ico">🛠️</span>
-        <div class="fase-n" style="background:var(--vino)">3</div>
-        <div class="fase-t">Desarrollo y producción</div>
-        <div class="fase-d">Creación de recursos digitales, materiales, tableros, rúbricas y herramientas</div>
-      </div>
-      <div class="fase">
-        <span class="fase-ico">🚀</span>
-        <div class="fase-n" style="background:var(--dorado);color:#000">4</div>
-        <div class="fase-t">Implementación</div>
-        <div class="fase-d">Piloto, ajustes en tiempo real, gestión del grupo y monitoreo del progreso</div>
-      </div>
-      <div class="fase">
-        <span class="fase-ico">📊</span>
-        <div class="fase-n" style="background:var(--verde)">5</div>
-        <div class="fase-t">Evaluación y mejora</div>
-        <div class="fase-d">Análisis de resultados, retroalimentación y rediseño para próximas ediciones</div>
+      <div class="problema-grid" style="grid-template-columns:1fr;gap:1rem">
+        <div class="prob-card">
+          <div class="pc-label" style="color:var(--blue-l)">🎯 Clase 15 · Planificación</div>
+          <div class="pc-q">¿Cómo puedo organizar todas las fases de un proyecto gamificado para asegurar su viabilidad, su impacto educativo y su correcta implementación en el aula?</div>
+        </div>
+        <div class="prob-card">
+          <div class="pc-label" style="color:var(--wine-l)">📊 Clase 16 · Seguimiento</div>
+          <div class="pc-q">¿Cómo puedo saber si mi alumnado está progresando, participando y aprendiendo durante una experiencia gamificada sin interrumpir el juego?</div>
+        </div>
       </div>
     </div>
-    <div class="r fases-img" data-s="2" data-o="2">
-      <img src="images/gamification_learning.jpeg" alt="Gamificación educativa">
-    </div>
-    <div class="r tip" data-s="2" data-o="3" style="margin-top:14px;">
-      <span class="tip-icon">🧠</span>
-      <div class="tip-text"><strong style="color:var(--dorado)">Clave neurodidáctica:</strong> La planificación por fases activa la corteza prefrontal y el pensamiento ejecutivo. Un proyecto bien estructurado reduce la carga cognitiva del docente y libera energía mental para la creatividad pedagógica.</div>
+    <div style="border-radius:16px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1)">
+      <img src="images/instructional_design.png" alt="Ciclo de diseño instruccional gamificado" style="width:100%;height:320px;object-fit:cover;display:block" />
     </div>
   </div>
-</div>
+</section>
 
-<!-- ── SLIDE 3: PLATAFORMAS ── -->
-<div class="slide" id="s3">
-  <div class="bg"></div><div class="ov"></div>
-  <div class="wrap">
-    <div class="r" data-s="3" data-o="0" style="text-align:center;margin-bottom:16px;">
-      <div class="label">Clase 15 · Herramientas</div>
-      <h2 class="htitle">Plataformas para <span>gestionar</span> tu proyecto</h2>
+<div class="divider"></div>
+
+<!-- AGENDA -->
+<section id="agenda">
+  <div class="sec-label rv">🗺️ Agenda</div>
+  <h2 class="sec-title rv">Lo que vamos a trabajar hoy</h2>
+  <p class="sec-sub rv">Dos clases de 60 minutos cada una, con teoría fundamentada, herramientas reales y práctica colaborativa.</p>
+  <div class="agenda-grid rv">
+    <div class="ag"><div class="ag-num">01</div><div class="ag-icon">🔄</div><div class="ag-title">Las 5 fases del proyecto gamificado</div></div>
+    <div class="ag"><div class="ag-num">02</div><div class="ag-icon">🛠️</div><div class="ag-title">Plataformas de gestión de tareas</div></div>
+    <div class="ag"><div class="ag-num">03</div><div class="ag-icon">📋</div><div class="ag-title">Trello en acción: tablero Kanban educativo</div></div>
+    <div class="ag"><div class="ag-num">04</div><div class="ag-icon">📊</div><div class="ag-title">Herramientas de seguimiento del alumnado</div></div>
+    <div class="ag"><div class="ag-num">05</div><div class="ag-icon">🏆</div><div class="ag-title">Evaluación de proyectos gamificados</div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- OBJETIVOS -->
+<section id="objetivos">
+  <div class="sec-label rv">🎯 Objetivos de aprendizaje</div>
+  <h2 class="sec-title rv">¿Qué vas a ser capaz de hacer al terminar?</h2>
+  <div class="obj-grid rv">
+    <div class="obj">
+      <div class="obj-ico" style="background:rgba(0,61,165,.2)">🗺️</div>
+      <div><h4>Diseñar el ciclo completo de un proyecto gamificado</h4><p>Aplicar las 5 fases metodológicas desde la planificación estratégica hasta la evaluación del impacto.</p></div>
     </div>
-    <div class="plat-grid">
-      <div class="r plat fl" data-s="3" data-o="1">
-        <span class="plat-logo">🟦</span>
-        <div class="plat-name">Trello</div>
-        <span class="plat-type t-kanban">Kanban</span>
-        <p class="plat-desc">Tableros visuales con listas y tarjetas. Ideal para organizar fases, asignar tareas y hacer seguimiento del progreso del proyecto gamificado.</p>
-        <div class="plat-tags"><span class="plat-tag">Gratuito</span><span class="plat-tag">Colaborativo</span><span class="plat-tag">Intuitivo</span></div>
-        <a href="https://trello.com" target="_blank" class="plat-link" onclick="event.stopPropagation()">→ Abrir Trello</a>
+    <div class="obj">
+      <div class="obj-ico" style="background:rgba(108,63,197,.2)">🛠️</div>
+      <div><h4>Seleccionar y usar plataformas de gestión</h4><p>Comparar Trello, Notion, Asana, Monday, Miro y ClickUp según el tipo de proyecto y contexto educativo.</p></div>
+    </div>
+    <div class="obj">
+      <div class="obj-ico" style="background:rgba(0,137,123,.2)">📊</div>
+      <div><h4>Implementar seguimiento sin interrumpir el juego</h4><p>Utilizar herramientas de analítica del aprendizaje que recopilan datos en tiempo real de forma invisible.</p></div>
+    </div>
+    <div class="obj">
+      <div class="obj-ico" style="background:rgba(230,81,0,.2)">🏆</div>
+      <div><h4>Evaluar el impacto de la gamificación</h4><p>Aplicar rúbricas, portfolios digitales y métricas de engagement para medir el aprendizaje real.</p></div>
+    </div>
+    <div class="obj">
+      <div class="obj-ico" style="background:rgba(123,29,46,.2)">🤝</div>
+      <div><h4>Gestionar equipos y colaboración</h4><p>Coordinar proyectos gamificados colaborativos usando tableros Kanban y herramientas de trabajo en equipo.</p></div>
+    </div>
+    <div class="obj">
+      <div class="obj-ico" style="background:rgba(245,166,35,.2)">🔬</div>
+      <div><h4>Fundamentar decisiones pedagógicas</h4><p>Justificar cada decisión de diseño con evidencia científica de la neurodidáctica y la tecnología educativa.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FASES DEL PROYECTO -->
+<section id="fases">
+  <div class="sec-label rv">🔄 Clase 15 · Planificación</div>
+  <h2 class="sec-title rv">Las 5 fases de un proyecto gamificado</h2>
+  <p class="sec-sub rv">Todo proyecto gamificado exitoso sigue un ciclo metodológico riguroso. Cada fase es imprescindible: saltarse una es comprometer el resultado final.</p>
+
+  <div class="split rv">
+    <div class="split-text">
+      <h3>Del caos a la arquitectura pedagógica</h3>
+      <p>La gamificación sin metodología es solo entretenimiento. Con metodología, es <strong>aprendizaje transformador</strong>. Las 5 fases que verás a continuación no son una receta, sino un marco adaptable que garantiza coherencia entre los objetivos de aprendizaje, los mecanismos de juego y la evaluación del impacto.</p>
+      <p>Según Werbach y Hunter (2012), los proyectos gamificados que siguen un proceso estructurado obtienen un <strong>89% más de engagement</strong> y un <strong>40% más de retención</strong> que los diseñados de forma intuitiva.</p>
+      <div class="chips">
+        <span class="chip ch-blue">Objetivos SMART</span>
+        <span class="chip ch-wine">Diseño centrado en el usuario</span>
+        <span class="chip ch-gold">Iteración continua</span>
+        <span class="chip ch-mint">Evidencia científica</span>
       </div>
-      <div class="r plat" data-s="3" data-o="2">
-        <span class="plat-logo">⬜</span>
-        <div class="plat-name">Notion</div>
-        <span class="plat-type t-wiki">Wiki + Tareas</span>
-        <p class="plat-desc">Todo en uno: documentación del proyecto, base de datos de estudiantes, seguimiento de misiones y portfolio digital integrado.</p>
-        <div class="plat-tags"><span class="plat-tag">Versátil</span><span class="plat-tag">Bases de datos</span><span class="plat-tag">Freemium</span></div>
-        <a href="https://notion.so" target="_blank" class="plat-link" onclick="event.stopPropagation()">→ Abrir Notion</a>
+    </div>
+    <div class="split-img">
+      <img src="images/project_phases.jpg" alt="Fases del proyecto gamificado" />
+    </div>
+  </div>
+
+  <div class="fases-grid rv">
+    <div class="fase f1" onclick="openFaseModal(0)">
+      <div class="fase-num">1</div>
+      <span class="fase-icon">🗺️</span>
+      <div class="fase-title">Planificación estratégica</div>
+      <div class="fase-desc">Análisis de contexto, objetivos SMART y viabilidad</div>
+    </div>
+    <div class="fase f2" onclick="openFaseModal(1)">
+      <div class="fase-num">2</div>
+      <span class="fase-icon">🎨</span>
+      <div class="fase-title">Diseño de la experiencia</div>
+      <div class="fase-desc">Narrativa, mecánicas, dinámicas y estética</div>
+    </div>
+    <div class="fase f3" onclick="openFaseModal(2)">
+      <div class="fase-num">3</div>
+      <span class="fase-icon">⚙️</span>
+      <div class="fase-title">Desarrollo de recursos</div>
+      <div class="fase-desc">Creación de contenidos, materiales y herramientas digitales</div>
+    </div>
+    <div class="fase f4" onclick="openFaseModal(3)">
+      <div class="fase-num">4</div>
+      <span class="fase-icon">🚀</span>
+      <div class="fase-title">Implementación en el aula</div>
+      <div class="fase-desc">Lanzamiento, gestión del grupo y adaptación en tiempo real</div>
+    </div>
+    <div class="fase f5" onclick="openFaseModal(4)">
+      <div class="fase-num">5</div>
+      <span class="fase-icon">📊</span>
+      <div class="fase-title">Evaluación e iteración</div>
+      <div class="fase-desc">Métricas de impacto, reflexión y mejora continua</div>
+    </div>
+  </div>
+
+  <div class="fases-chips rv">
+    <span class="fchip">Análisis de contexto</span>
+    <span class="fchip">KPIs educativos</span>
+    <span class="fchip">Perfil del alumnado</span>
+    <span class="fchip">Mecánicas de juego</span>
+    <span class="fchip">Narrativa gamificada</span>
+    <span class="fchip">Prototipado rápido</span>
+    <span class="fchip">Gestión del cambio</span>
+    <span class="fchip">Analítica del aprendizaje</span>
+    <span class="fchip">Iteración continua</span>
+  </div>
+
+  <div class="quote rv">
+    <blockquote>El diseño gamificado no comienza con la tecnología ni con los juegos. Comienza con una pregunta fundamental: ¿qué quiero que mis estudiantes sean capaces de hacer que ahora no pueden?</blockquote>
+    <cite>— Werbach & Hunter, For the Win (2012)</cite>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PLATAFORMAS -->
+<section id="plataformas">
+  <div class="sec-label rv">🛠️ Plataformas de gestión</div>
+  <h2 class="sec-title rv">Las herramientas que hacen posible el proyecto</h2>
+  <p class="sec-sub rv">No todas las plataformas son iguales. La elección depende del tipo de proyecto, el nivel de complejidad y las preferencias del equipo docente.</p>
+
+  <div class="plat-grid rv">
+    <div class="plat pt-trello">
+      <span class="plat-logo">📋</span>
+      <div class="plat-name">Trello</div>
+      <div class="plat-desc">Tableros Kanban visuales e intuitivos. La opción más accesible para docentes que se inician en la gestión de proyectos gamificados.</div>
+      <div class="plat-tags">
+        <span class="plat-tag">Gratuito</span><span class="plat-tag">Visual</span><span class="plat-tag">Kanban</span><span class="plat-tag">Colaborativo</span>
       </div>
-      <div class="r plat fr" data-s="3" data-o="3">
-        <span class="plat-logo">🔴</span>
-        <div class="plat-name">Asana</div>
-        <span class="plat-type t-task">Gestión de tareas</span>
-        <p class="plat-desc">Gestión avanzada con líneas de tiempo, dependencias entre tareas y reportes automáticos de progreso del proyecto.</p>
-        <div class="plat-tags"><span class="plat-tag">Línea de tiempo</span><span class="plat-tag">Reportes</span><span class="plat-tag">Freemium</span></div>
-        <a href="https://asana.com" target="_blank" class="plat-link" onclick="event.stopPropagation()">→ Abrir Asana</a>
+      <a href="https://trello.com" target="_blank" class="plat-link lk-trello">🔗 Abrir Trello</a>
+    </div>
+    <div class="plat pt-notion">
+      <span class="plat-logo">📓</span>
+      <div class="plat-name">Notion</div>
+      <div class="plat-desc">Todo en uno: base de datos, wiki, tablero y documentación. Ideal para proyectos complejos con múltiples asignaturas o equipos.</div>
+      <div class="plat-tags">
+        <span class="plat-tag">Freemium</span><span class="plat-tag">Base de datos</span><span class="plat-tag">Wiki</span><span class="plat-tag">Flexible</span>
       </div>
-      <div class="r plat fl" data-s="3" data-o="4">
-        <span class="plat-logo">🟠</span>
-        <div class="plat-name">Monday.com</div>
-        <span class="plat-type t-task">Gestión visual</span>
-        <p class="plat-desc">Tableros personalizables con automatizaciones, dashboards y vistas múltiples: Kanban, Gantt y calendario.</p>
-        <div class="plat-tags"><span class="plat-tag">Automatización</span><span class="plat-tag">Dashboards</span><span class="plat-tag">De pago</span></div>
-        <a href="https://monday.com" target="_blank" class="plat-link" onclick="event.stopPropagation()">→ Abrir Monday</a>
+      <a href="https://notion.so" target="_blank" class="plat-link lk-notion">🔗 Abrir Notion</a>
+    </div>
+    <div class="plat pt-asana">
+      <span class="plat-logo">✅</span>
+      <div class="plat-name">Asana</div>
+      <div class="plat-desc">Gestión de tareas profesional con líneas de tiempo, dependencias y automatizaciones. Para proyectos gamificados de larga duración.</div>
+      <div class="plat-tags">
+        <span class="plat-tag">Freemium</span><span class="plat-tag">Timeline</span><span class="plat-tag">Automatización</span>
       </div>
-      <div class="r plat" data-s="3" data-o="5">
-        <span class="plat-logo">🟡</span>
-        <div class="plat-name">Miro</div>
-        <span class="plat-type t-visual">Pizarra colaborativa</span>
-        <p class="plat-desc">Pizarra digital infinita para mapas mentales, diseño de narrativas, brainstorming colaborativo y prototipado visual.</p>
-        <div class="plat-tags"><span class="plat-tag">Visual</span><span class="plat-tag">Tiempo real</span><span class="plat-tag">Freemium</span></div>
-        <a href="https://miro.com" target="_blank" class="plat-link" onclick="event.stopPropagation()">→ Abrir Miro</a>
+      <a href="https://asana.com" target="_blank" class="plat-link lk-asana">🔗 Abrir Asana</a>
+    </div>
+    <div class="plat pt-monday">
+      <span class="plat-logo">📅</span>
+      <div class="plat-name">Monday.com</div>
+      <div class="plat-desc">Plataforma de gestión de trabajo visual con dashboards personalizables y múltiples vistas. Muy visual e intuitiva.</div>
+      <div class="plat-tags">
+        <span class="plat-tag">Pago</span><span class="plat-tag">Dashboards</span><span class="plat-tag">Múltiples vistas</span>
       </div>
-      <div class="r plat fr" data-s="3" data-o="6">
-        <span class="plat-logo">🟣</span>
-        <div class="plat-name">ClickUp</div>
-        <span class="plat-type t-all">Todo en uno</span>
-        <p class="plat-desc">La plataforma más completa: tareas, documentos, chat, metas y tiempo. Perfecta para proyectos gamificados complejos.</p>
-        <div class="plat-tags"><span class="plat-tag">Completo</span><span class="plat-tag">Personalizable</span><span class="plat-tag">Freemium</span></div>
-        <a href="https://clickup.com" target="_blank" class="plat-link" onclick="event.stopPropagation()">→ Abrir ClickUp</a>
+      <a href="https://monday.com" target="_blank" class="plat-link lk-monday">🔗 Abrir Monday</a>
+    </div>
+    <div class="plat pt-miro">
+      <span class="plat-logo">🖼️</span>
+      <div class="plat-name">Miro</div>
+      <div class="plat-desc">Pizarra colaborativa infinita. Perfecta para la fase de diseño: mapas mentales, storyboards, prototipos y brainstorming visual.</div>
+      <div class="plat-tags">
+        <span class="plat-tag">Freemium</span><span class="plat-tag">Pizarra</span><span class="plat-tag">Brainstorming</span>
+      </div>
+      <a href="https://miro.com" target="_blank" class="plat-link lk-miro" style="color:#333">🔗 Abrir Miro</a>
+    </div>
+    <div class="plat pt-click">
+      <span class="plat-logo">⚡</span>
+      <div class="plat-name">ClickUp</div>
+      <div class="plat-desc">La plataforma más completa: combina gestión de proyectos, documentos, objetivos y analítica en un solo espacio de trabajo.</div>
+      <div class="plat-tags">
+        <span class="plat-tag">Freemium</span><span class="plat-tag">Todo en uno</span><span class="plat-tag">Analítica</span>
+      </div>
+      <a href="https://clickup.com" target="_blank" class="plat-link lk-click">🔗 Abrir ClickUp</a>
+    </div>
+  </div>
+
+  <div class="split rev rv">
+    <div class="split-text">
+      <h3>Trello en acción: el tablero Kanban del docente gamificador</h3>
+      <p>Trello es la herramienta más adoptada en educación por su curva de aprendizaje mínima y su potencia visual. Un tablero bien configurado permite gestionar simultáneamente <strong>el diseño del proyecto, el seguimiento del alumnado y la evaluación</strong> desde un único espacio.</p>
+      <p>La clave está en adaptar las columnas del Kanban a las fases del proyecto gamificado: <strong>Planificación → Diseño → Desarrollo → Implementación → Evaluación</strong>. Cada tarjeta representa una tarea, con responsable, fecha límite y checklist interno.</p>
+      <a href="https://trello.com/templates/education" target="_blank" class="btn btn-a" style="margin-top:1rem;display:inline-flex">🔗 Ver plantillas educativas de Trello</a>
+    </div>
+    <div class="split-img">
+      <img src="images/trello_classroom.png" alt="Tablero Trello para docentes" />
+    </div>
+  </div>
+
+  <!-- KANBAN VISUAL -->
+  <div class="rv">
+    <h3 style="font-family:'Playfair Display',serif;font-size:1.3rem;margin-bottom:1rem;color:#fff">Tablero Kanban del proyecto gamificado</h3>
+    <div class="kanban-board">
+      <div class="kanban-col">
+        <div class="kanban-header kh-1">📋 Planificación</div>
+        <div class="kcard">🎯 Definir objetivos SMART</div>
+        <div class="kcard">👥 Analizar perfil del alumnado</div>
+        <div class="kcard">📊 Establecer KPIs</div>
+        <div class="kcard">✅ Validar viabilidad</div>
+      </div>
+      <div class="kanban-col">
+        <div class="kanban-header kh-2">🎨 Diseño</div>
+        <div class="kcard">📖 Crear narrativa</div>
+        <div class="kcard">🎮 Seleccionar mecánicas</div>
+        <div class="kcard">🗺️ Diseñar mapa de progreso</div>
+        <div class="kcard">🏆 Definir recompensas</div>
+      </div>
+      <div class="kanban-col">
+        <div class="kanban-header kh-3">⚙️ Desarrollo</div>
+        <div class="kcard">🖼️ Crear recursos visuales</div>
+        <div class="kcard">🎵 Producir audio/vídeo</div>
+        <div class="kcard">💻 Configurar plataformas</div>
+        <div class="kcard">🧪 Prueba piloto</div>
+      </div>
+      <div class="kanban-col">
+        <div class="kanban-header kh-4">🚀 Implementación</div>
+        <div class="kcard">📢 Lanzamiento oficial</div>
+        <div class="kcard">📊 Monitoreo en tiempo real</div>
+        <div class="kcard">🔧 Ajustes sobre la marcha</div>
+        <div class="kcard">💬 Feedback continuo</div>
+      </div>
+      <div class="kanban-col">
+        <div class="kanban-header kh-5">📊 Evaluación</div>
+        <div class="kcard">📈 Analizar métricas</div>
+        <div class="kcard">🏅 Entregar insignias finales</div>
+        <div class="kcard">📝 Reflexión docente</div>
+        <div class="kcard">🔄 Plan de mejora</div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- ── SLIDE 4: TRELLO + QUIZIZZ ── -->
-<div class="slide" id="s4">
-  <div class="bg"></div><div class="ov"></div>
-  <div class="wrap">
-    <div class="r" data-s="4" data-o="0" style="text-align:center;margin-bottom:14px;">
-      <div class="label">Clase 15 · Caso práctico</div>
-      <h2 class="htitle">Trello en acción: <span>La Liga del Cálculo Mental</span></h2>
-    </div>
-    <div class="r trello-board" data-s="4" data-o="1">
-      <div class="tcol">
-        <div class="tcol-h">📋 Por hacer</div>
-        <div class="tcard" style="border-color:#6B7280"><div class="tcard-t">Diseñar narrativa del proyecto</div><div class="tcard-m">📅 Semana 1 · 🏷️ Diseño</div></div>
-        <div class="tcard" style="border-color:#6B7280"><div class="tcard-t">Crear rúbrica de evaluación</div><div class="tcard-m">📅 Semana 2 · 🏷️ Evaluación</div></div>
-        <div class="tcard" style="border-color:#6B7280"><div class="tcard-t">Preparar insignias digitales</div><div class="tcard-m">📅 Semana 2 · 🏷️ Recursos</div></div>
-      </div>
-      <div class="tcol">
-        <div class="tcol-h">⚡ En progreso</div>
-        <div class="tcard" style="border-color:var(--azul2)"><div class="tcard-t">Misión 1: Los Números Mágicos</div><div class="tcard-m">📅 Esta semana · 🏷️ Implementación</div></div>
-        <div class="tcard" style="border-color:var(--azul2)"><div class="tcard-t">Tablero de puntuación grupal</div><div class="tcard-m">📅 Esta semana · 🏷️ Seguimiento</div></div>
-      </div>
-      <div class="tcol">
-        <div class="tcol-h">👀 En revisión</div>
-        <div class="tcard" style="border-color:var(--dorado)"><div class="tcard-t">Ajuste de dificultad Misión 0</div><div class="tcard-m">📅 Ayer · 🏷️ Mejora</div></div>
-        <div class="tcard" style="border-color:var(--dorado)"><div class="tcard-t">Feedback de estudiantes</div><div class="tcard-m">📅 Ayer · 🏷️ Evaluación</div></div>
-      </div>
-      <div class="tcol">
-        <div class="tcol-h">✅ Completado</div>
-        <div class="tcard" style="border-color:var(--verde)"><div class="tcard-t">Diagnóstico inicial del grupo</div><div class="tcard-m">✓ Completado · 🏷️ Análisis</div></div>
-        <div class="tcard" style="border-color:var(--verde)"><div class="tcard-t">Diseño de personajes y roles</div><div class="tcard-m">✓ Completado · 🏷️ Diseño</div></div>
-        <div class="tcard" style="border-color:var(--verde)"><div class="tcard-t">Presentación del proyecto</div><div class="tcard-m">✓ Completado · 🏷️ Implementación</div></div>
-      </div>
-    </div>
-    <div class="r quizziz-box" data-s="4" data-o="2">
-      <span class="qz-icon">🎮</span>
+  <!-- QUIZ -->
+  <div class="quiz-box rv">
+    <div class="quiz-header">
+      <div class="quiz-icon">🧠</div>
       <div>
-        <div class="qz-title">¿Cuánto sabes sobre gestión de proyectos gamificados?</div>
-        <div class="qz-desc">Antes de pasar al taller, comprueba lo que has aprendido con este Quizizz de 8 preguntas. ¡Tienes 5 minutos!</div>
-        <a href="https://quizizz.com/join?gc=GESTION8" target="_blank" class="qz-btn" onclick="event.stopPropagation()">🚀 Unirse al Quizizz · Código: <strong>GESTION8</strong></a>
-        <div style="margin-top:6px;color:rgba(255,255,255,.5);font-size:10px;">O busca en Quizizz: <em>"Gestión de proyectos gamificados"</em> · 8 preguntas · 5 min</div>
+        <h3>Quiz de comprobación · Clase 15</h3>
+        <p>5 preguntas para consolidar lo aprendido sobre planificación y gestión de proyectos gamificados</p>
       </div>
     </div>
-    <div class="r tip" data-s="4" data-o="3" style="margin-top:12px;">
-      <span class="tip-icon">💡</span>
-      <div class="tip-text"><strong style="color:var(--dorado)">Clave pedagógica:</strong> Compartir el tablero con el alumnado convierte la gestión del proyecto en metacognición: los estudiantes ven el progreso colectivo y desarrollan autorregulación del aprendizaje.</div>
-    </div>
-  </div>
-</div>
-
-<!-- ── SLIDE 5: SEGUIMIENTO ── -->
-<div class="slide" id="s5">
-  <div class="bg"></div><div class="ov"></div>
-  <div class="wrap">
-    <div class="r" data-s="5" data-o="0" style="text-align:center;margin-bottom:16px;">
-      <div class="label">Clase 16 · Seguimiento</div>
-      <h2 class="htitle">Ver el aprendizaje <span>sin interrumpir el juego</span></h2>
-    </div>
-    <div class="seg-grid">
-      <div class="r seg-card fl" data-s="5" data-o="1">
-        <div class="seg-head">
-          <div class="seg-ico" style="background:rgba(255,107,107,.2)">📊</div>
-          <div><div class="seg-name">Quizizz Analytics</div><div class="seg-sub">Análisis en tiempo real</div></div>
+    <div class="quiz-prog"><div class="quiz-prog-fill" id="qpf" style="width:20%"></div></div>
+    <div id="quizContainer">
+      <div class="quiz-q active" id="q0">
+        <div class="quiz-qnum">Pregunta 1 de 5</div>
+        <div class="quiz-qtext">¿Cuál es la primera fase en el diseño de un proyecto gamificado según la metodología vista en clase?</div>
+        <div class="quiz-opts">
+          <button class="qopt" onclick="answerQ(0,0,1)">A. Diseño de la experiencia</button>
+          <button class="qopt" onclick="answerQ(0,1,1)">B. Planificación estratégica</button>
+          <button class="qopt" onclick="answerQ(0,2,1)">C. Desarrollo de recursos</button>
+          <button class="qopt" onclick="answerQ(0,3,1)">D. Implementación en el aula</button>
         </div>
-        <div class="seg-feats">
-          <div class="seg-feat"><span class="seg-dot" style="background:#ff6b6b"></span>Resultados por pregunta y por estudiante</div>
-          <div class="seg-feat"><span class="seg-dot" style="background:#ff6b6b"></span>Identificación de conceptos no comprendidos</div>
-          <div class="seg-feat"><span class="seg-dot" style="background:#ff6b6b"></span>Exportación a Google Classroom</div>
-          <div class="seg-feat"><span class="seg-dot" style="background:#ff6b6b"></span>Modo asíncrono para tarea gamificada</div>
+        <div class="quiz-fb" id="fb0"></div>
+        <div class="quiz-nav"><span></span><button class="btn btn-a" onclick="nextQ(1)" id="nq0" style="display:none">Siguiente →</button></div>
+      </div>
+      <div class="quiz-q" id="q1">
+        <div class="quiz-qnum">Pregunta 2 de 5</div>
+        <div class="quiz-qtext">¿Qué herramienta de gestión es más adecuada para la fase de diseño visual y brainstorming colaborativo?</div>
+        <div class="quiz-opts">
+          <button class="qopt" onclick="answerQ(1,0,2)">A. Asana</button>
+          <button class="qopt" onclick="answerQ(1,1,2)">B. Trello</button>
+          <button class="qopt" onclick="answerQ(1,2,2)">C. Miro</button>
+          <button class="qopt" onclick="answerQ(1,3,2)">D. ClickUp</button>
         </div>
+        <div class="quiz-fb" id="fb1"></div>
+        <div class="quiz-nav"><span></span><button class="btn btn-a" onclick="nextQ(2)" id="nq1" style="display:none">Siguiente →</button></div>
       </div>
-      <div class="r seg-card fr" data-s="5" data-o="2">
-        <div class="seg-head">
-          <div class="seg-ico" style="background:rgba(0,168,120,.2)">🎮</div>
-          <div><div class="seg-name">Classcraft</div><div class="seg-sub">Seguimiento gamificado</div></div>
+      <div class="quiz-q" id="q2">
+        <div class="quiz-qnum">Pregunta 3 de 5</div>
+        <div class="quiz-qtext">En un tablero Kanban para proyectos gamificados, ¿qué representa cada tarjeta?</div>
+        <div class="quiz-opts">
+          <button class="qopt" onclick="answerQ(2,0,1)">A. Un estudiante del grupo</button>
+          <button class="qopt" onclick="answerQ(2,1,1)">B. Una tarea específica del proyecto</button>
+          <button class="qopt" onclick="answerQ(2,2,1)">C. Una sesión de clase completa</button>
+          <button class="qopt" onclick="answerQ(2,3,1)">D. Un objetivo de aprendizaje</button>
         </div>
-        <div class="seg-feats">
-          <div class="seg-feat"><span class="seg-dot" style="background:#00a878"></span>Puntos de experiencia ligados al aprendizaje</div>
-          <div class="seg-feat"><span class="seg-dot" style="background:#00a878"></span>Equipos colaborativos con roles de personaje</div>
-          <div class="seg-feat"><span class="seg-dot" style="background:#00a878"></span>Alertas tempranas de desenganche</div>
-          <div class="seg-feat"><span class="seg-dot" style="background:#00a878"></span>Integración con Google Classroom y Canvas</div>
+        <div class="quiz-fb" id="fb2"></div>
+        <div class="quiz-nav"><span></span><button class="btn btn-a" onclick="nextQ(3)" id="nq2" style="display:none">Siguiente →</button></div>
+      </div>
+      <div class="quiz-q" id="q3">
+        <div class="quiz-qnum">Pregunta 4 de 5</div>
+        <div class="quiz-qtext">¿Qué significa que los objetivos de un proyecto gamificado sean SMART?</div>
+        <div class="quiz-opts">
+          <button class="qopt" onclick="answerQ(3,0,0)">A. Específicos, medibles, alcanzables, relevantes y temporales</button>
+          <button class="qopt" onclick="answerQ(3,1,0)">B. Simples, motivadores, atractivos, retadores y tecnológicos</button>
+          <button class="qopt" onclick="answerQ(3,2,0)">C. Sistemáticos, medibles, ágiles, reflexivos y transformadores</button>
+          <button class="qopt" onclick="answerQ(3,3,0)">D. Sociales, motivadores, activos, reflexivos y temporales</button>
         </div>
+        <div class="quiz-fb" id="fb3"></div>
+        <div class="quiz-nav"><span></span><button class="btn btn-a" onclick="nextQ(4)" id="nq3" style="display:none">Siguiente →</button></div>
       </div>
-      <div class="r seg-card fl" data-s="5" data-o="3">
-        <div class="seg-head">
-          <div class="seg-ico" style="background:rgba(0,61,165,.2)">📋</div>
-          <div><div class="seg-name">Google Forms + Sheets</div><div class="seg-sub">Evaluación y analítica</div></div>
+      <div class="quiz-q" id="q4">
+        <div class="quiz-qnum">Pregunta 5 de 5</div>
+        <div class="quiz-qtext">¿En qué fase del proyecto gamificado se realiza la prueba piloto antes del lanzamiento oficial?</div>
+        <div class="quiz-opts">
+          <button class="qopt" onclick="answerQ(4,0,2)">A. Planificación estratégica</button>
+          <button class="qopt" onclick="answerQ(4,1,2)">B. Diseño de la experiencia</button>
+          <button class="qopt" onclick="answerQ(4,2,2)">C. Desarrollo de recursos</button>
+          <button class="qopt" onclick="answerQ(4,3,2)">D. Evaluación e iteración</button>
         </div>
-        <div class="seg-feats">
-          <div class="seg-feat"><span class="seg-dot" style="background:var(--azul2)"></span>Formularios de autoevaluación en la narrativa</div>
-          <div class="seg-feat"><span class="seg-dot" style="background:var(--azul2)"></span>Dashboard automático en Sheets con gráficos</div>
-          <div class="seg-feat"><span class="seg-dot" style="background:var(--azul2)"></span>Seguimiento longitudinal del progreso</div>
-          <div class="seg-feat"><span class="seg-dot" style="background:var(--azul2)"></span>Completamente gratuito</div>
-        </div>
+        <div class="quiz-fb" id="fb4"></div>
+        <div class="quiz-nav"><span></span><button class="btn btn-a" onclick="showScore()" id="nq4" style="display:none">Ver resultados 🏆</button></div>
       </div>
-      <div class="r seg-card fr" data-s="5" data-o="4">
-        <div class="seg-head">
-          <div class="seg-ico" style="background:rgba(245,166,35,.2)">🏆</div>
-          <div><div class="seg-name">Seesaw / Padlet</div><div class="seg-sub">Portfolio digital</div></div>
-        </div>
-        <div class="seg-feats">
-          <div class="seg-feat"><span class="seg-dot" style="background:var(--dorado)"></span>Portfolio de evidencias de aprendizaje</div>
-          <div class="seg-feat"><span class="seg-dot" style="background:var(--dorado)"></span>Feedback multimedia (audio, video, texto)</div>
-          <div class="seg-feat"><span class="seg-dot" style="background:var(--dorado)"></span>Visibilidad para familias y tutores</div>
-          <div class="seg-feat"><span class="seg-dot" style="background:var(--dorado)"></span>Integración con narrativa gamificada</div>
-        </div>
-      </div>
-    </div>
-    <div class="r tip" data-s="5" data-o="5" style="margin-top:14px;">
-      <span class="tip-icon">🧠</span>
-      <div class="tip-text"><strong style="color:var(--dorado)">Efecto Zeigarnik aplicado:</strong> Mostrar al alumnado su progreso incompleto (barra de XP al 70%, misión pendiente) activa el impulso neurológico de completar la tarea. El seguimiento visible no interrumpe el juego: <em>es parte del juego</em>.</div>
-    </div>
-  </div>
-</div>
-
-<!-- ── SLIDE 6: EVALUACIÓN ── -->
-<div class="slide" id="s6">
-  <div class="bg"></div><div class="ov"></div>
-  <div class="wrap">
-    <div class="r" data-s="6" data-o="0" style="text-align:center;margin-bottom:16px;">
-      <div class="label">Clase 16 · Evaluación gamificada</div>
-      <h2 class="htitle">Evaluar sin <span>romper la magia</span> del juego</h2>
-    </div>
-    <div class="eval-grid">
-      <div class="r eval-card zi" data-s="6" data-o="1">
-        <span class="eval-ico">🗺️</span>
-        <div class="eval-name">Rúbrica gamificada</div>
-        <p class="eval-desc">Criterios integrados en la narrativa: niveles de maestría, rangos de personaje, insignias de competencia.</p>
-        <span class="eval-uso u-form">Formativa</span>
-      </div>
-      <div class="r eval-card zi" data-s="6" data-o="2">
-        <span class="eval-ico">📖</span>
-        <div class="eval-name">Portfolio de misiones</div>
-        <p class="eval-desc">Evidencias organizadas como "diario de aventuras" o "libro de hechizos" del personaje del estudiante.</p>
-        <span class="eval-uso u-mix">Formativa + Sumativa</span>
-      </div>
-      <div class="r eval-card zi" data-s="6" data-o="3">
-        <span class="eval-ico">⚡</span>
-        <div class="eval-name">Retroalimentación inmediata</div>
-        <p class="eval-desc">Feedback integrado en el juego: pistas, vidas, XP, mensajes del personaje guía. El error es parte del aprendizaje.</p>
-        <span class="eval-uso u-form">Formativa</span>
-      </div>
-      <div class="r eval-card zi" data-s="6" data-o="4">
-        <span class="eval-ico">🎭</span>
-        <div class="eval-name">Coevaluación entre pares</div>
-        <p class="eval-desc">Los equipos se evalúan mutuamente con rúbricas simplificadas. Desarrolla pensamiento crítico y metacognición.</p>
-        <span class="eval-uso u-form">Formativa</span>
-      </div>
-      <div class="r eval-card zi" data-s="6" data-o="5">
-        <span class="eval-ico">📊</span>
-        <div class="eval-name">Analítica de aprendizaje</div>
-        <p class="eval-desc">Dashboards con datos de participación, tiempo, aciertos y progresión. Permite intervención temprana.</p>
-        <span class="eval-uso u-mix">Formativa + Sumativa</span>
-      </div>
-      <div class="r eval-card zi" data-s="6" data-o="6">
-        <span class="eval-ico">🏅</span>
-        <div class="eval-name">Insignias de competencia</div>
-        <p class="eval-desc">Reconocimiento visible de logros. Cada insignia certifica una competencia demostrada, no solo una tarea completada.</p>
-        <span class="eval-uso u-sum">Sumativa</span>
-      </div>
-    </div>
-    <div class="r eval-img-row" data-s="6" data-o="7">
-      <div class="eval-img-box"><img src="images/student_progress_dashboard.jpg" alt="Dashboard de seguimiento del alumnado"></div>
-      <div class="eval-img-box"><img src="images/learning_analytics.jpg" alt="Analítica de aprendizaje personalizada"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ── SLIDE 7: ACTIVIDAD GRUPAL ── -->
-<div class="slide" id="s7">
-  <div class="bg"></div><div class="ov"></div>
-  <div class="act-wrap">
-    <div class="r act-header" data-s="7" data-o="0">
-      <div class="label">Taller grupal · Clases 15 y 16</div>
-      <div class="act-timer">⏱️ 20 minutos · Trabajo en equipo</div>
-      <h2 class="act-htitle" style="color:#fff;font-family:'Playfair Display',serif;font-size:clamp(20px,2.8vw,32px)">Diseña el sistema de gestión<br>de tu proyecto gamificado</h2>
-    </div>
-    <!-- VIDEO MOTIVACIÓN -->
-    <div class="r act-video-row" data-s="7" data-o="1">
-      <div class="act-video-box">
-        <iframe src="https://www.youtube.com/embed/pMfjwby-95U?rel=0&modestbranding=1&start=0" allowfullscreen title="Taller: Construyendo un proyecto gamificado"></iframe>
-      </div>
-      <div class="act-motiv">
-        <div class="act-motiv-title">🔥 ¿Por qué esto importa?</div>
-        <div class="act-motiv-text">Un proyecto gamificado sin sistema de gestión es como un escape room sin mapa: emocionante al principio, caótico al final. Los mejores diseñadores de experiencias educativas no son los más creativos, son los más organizados.</div>
-        <div class="act-motiv-quote">"La diferencia entre una idea brillante y una experiencia transformadora es la gestión. Hoy construís el andamiaje invisible que hace que vuestra experiencia sea sostenible, medible y mejorable."</div>
-      </div>
-    </div>
-    <!-- PASOS + RÚBRICA -->
-    <div class="r act-body" data-s="7" data-o="2">
-      <div class="act-block">
-        <div class="act-block-h">🗺️ Paso a paso</div>
-        <ul class="act-steps">
-          <li class="act-step"><span class="act-sn">1</span>Elegid una herramienta de gestión (Trello recomendado) y cread un tablero con las 5 fases del proyecto.</li>
-          <li class="act-step"><span class="act-sn">2</span>Añadid al menos 3 tarjetas por fase con tareas concretas de vuestra Actividad 3.</li>
-          <li class="act-step"><span class="act-sn">3</span>Definid cómo haréis seguimiento del progreso del alumnado: ¿qué herramienta? ¿qué datos recogéis?</li>
-          <li class="act-step"><span class="act-sn">4</span>Diseñad un indicador de evaluación que no interrumpa la narrativa del juego.</li>
-          <li class="act-step"><span class="act-sn">5</span>Compartid el enlace del tablero en el chat y presentad en 2 minutos: ¿qué decisión os costó más y por qué?</li>
-        </ul>
-      </div>
-      <div class="rubrica">
-        <table>
-          <thead>
-            <tr><th>Criterio</th><th>Excelente (4)</th><th>Bien (3)</th><th>En desarrollo (2)</th></tr>
-          </thead>
-          <tbody>
-            <tr><td><strong style="color:#fff">Estructura del tablero</strong></td><td>5 fases completas con tareas y responsables</td><td>4 fases con tareas claras</td><td>Fases incompletas</td></tr>
-            <tr><td><strong style="color:#fff">Sistema de seguimiento</strong></td><td>Herramienta concreta integrada en la narrativa</td><td>Herramienta definida con criterios</td><td>Herramienta sin criterios</td></tr>
-            <tr><td><strong style="color:#fff">Evaluación invisible</strong></td><td>Indicador creativo y pedagógicamente justificado</td><td>Indicador claro y coherente</td><td>Evaluación convencional</td></tr>
-            <tr><td><strong style="color:#fff">Presentación oral</strong></td><td>Clara, reflexiva, justifica con criterio pedagógico</td><td>Clara y completa</td><td>Breve o sin reflexión</td></tr>
-          </tbody>
-        </table>
+      <div class="quiz-score" id="quizScore">
+        <div class="quiz-score-num" id="scoreNum">0/5</div>
+        <div class="quiz-score-text" id="scoreTxt"></div>
+        <button class="btn btn-b" onclick="resetQuiz()" style="margin-top:1rem">🔄 Repetir quiz</button>
       </div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- ── SLIDE 8: CIERRE ── -->
-<div class="slide" id="s8">
-  <div class="bg"></div><div class="ov"></div>
-  <div class="cierre">
-    <span class="r cierre-ico" data-s="8" data-o="0">🏆</span>
-    <h2 class="r cierre-h" data-s="8" data-o="1">Gestionar es <span>diseñar</span><br>con responsabilidad</h2>
-    <div class="r cierre-quote" data-s="8" data-o="2">"La diferencia entre una experiencia gamificada que transforma y una que simplemente entretiene está en la gestión: en la capacidad de anticipar, monitorear, ajustar y evaluar sin que el alumnado pierda la magia del juego."</div>
-    <div class="r cierre-next" data-s="8" data-o="3">
-      <div class="cierre-next-lbl">Próxima clase · Tema 9</div>
-      <div class="cierre-next-t">Aplicaciones de Inteligencia Artificial en Educación</div>
-      <div class="cierre-next-d">Exploraremos cómo la IA generativa, los tutores inteligentes y las analíticas predictivas están transformando el diseño de experiencias de aprendizaje personalizadas y gamificadas.</div>
+<div class="divider"></div>
+
+<!-- SEGUIMIENTO -->
+<section id="seguimiento">
+  <div class="sec-label rv">📊 Clase 16 · Seguimiento</div>
+  <h2 class="sec-title rv">Herramientas para el seguimiento del alumnado</h2>
+  <p class="sec-sub rv">El gran reto de la gamificación: ¿cómo saber si el alumnado aprende sin romper la magia del juego? La respuesta está en la analítica invisible del aprendizaje.</p>
+
+  <div class="split rv">
+    <div class="split-img">
+      <img src="images/learning_dashboard.jpg" alt="Dashboard de seguimiento del aprendizaje" />
     </div>
-    <div class="r cierre-btns" data-s="8" data-o="4">
-      <button class="btn btn-vino" onclick="go(0);event.stopPropagation()">⬆️ Volver al inicio</button>
-      <button class="btn btn-azul" onclick="go(7);event.stopPropagation()">🎯 Ir al taller</button>
+    <div class="split-text">
+      <h3>La analítica del aprendizaje como brújula pedagógica</h3>
+      <p>La analítica del aprendizaje (<em>Learning Analytics</em>) permite al docente tomar decisiones basadas en datos sin interrumpir la experiencia gamificada. Según Siemens y Long (2011), los sistemas que integran analítica en tiempo real mejoran la <strong>personalización del aprendizaje en un 60%</strong>.</p>
+      <p>El secreto está en diseñar los mecanismos de seguimiento <strong>dentro de la narrativa</strong>: los puntos de experiencia son datos de progreso, las misiones completadas son evidencias de competencia, y los badges son indicadores de logro verificables.</p>
+      <div class="chips">
+        <span class="chip ch-blue">Learning Analytics</span>
+        <span class="chip ch-mint">Datos en tiempo real</span>
+        <span class="chip ch-gold">Seguimiento invisible</span>
+        <span class="chip ch-wine">Personalización</span>
+      </div>
     </div>
   </div>
-</div>
 
-</div><!-- fin slides -->
+  <div class="seg-grid rv">
+    <div class="seg sg-forms">
+      <span class="seg-icon">📝</span>
+      <div class="seg-name">Google Forms + Sheets</div>
+      <div class="seg-tagline">La combinación más accesible y poderosa</div>
+      <ul class="seg-features">
+        <li>Formularios integrados en la narrativa como "misiones de exploración"</li>
+        <li>Hojas de cálculo con actualización automática en tiempo real</li>
+        <li>Gráficos de progreso individuales y grupales</li>
+        <li>Integración con Google Classroom y Moodle</li>
+        <li>Completamente gratuito con cuenta educativa</li>
+      </ul>
+      <a href="https://forms.google.com" target="_blank" class="seg-link sl-forms">🔗 Google Forms</a>
+    </div>
+    <div class="seg sg-classcraft">
+      <span class="seg-icon">⚔️</span>
+      <div class="seg-name">Classcraft</div>
+      <div class="seg-tagline">RPG educativo con seguimiento integrado</div>
+      <ul class="seg-features">
+        <li>Sistema de puntos de experiencia (XP) y salud (HP) por comportamiento</li>
+        <li>Dashboard del docente con analítica individual y grupal</li>
+        <li>Misiones y quests vinculadas a objetivos curriculares</li>
+        <li>Notificaciones automáticas a familias</li>
+        <li>Integración con Google Classroom y Canvas</li>
+      </ul>
+      <a href="https://classcraft.com" target="_blank" class="seg-link sl-classcraft">🔗 Classcraft</a>
+    </div>
+    <div class="seg sg-socrative">
+      <span class="seg-icon">🚀</span>
+      <div class="seg-name">Socrative</div>
+      <div class="seg-tagline">Evaluación formativa en tiempo real</div>
+      <ul class="seg-features">
+        <li>Quizzes en tiempo real con resultados instantáneos</li>
+        <li>Space Race: competición visual por equipos</li>
+        <li>Exit Tickets automáticos al final de cada sesión</li>
+        <li>Informes exportables por estudiante y por pregunta</li>
+        <li>Versión gratuita con hasta 50 estudiantes</li>
+      </ul>
+      <a href="https://socrative.com" target="_blank" class="seg-link sl-socrative">🔗 Socrative</a>
+    </div>
+    <div class="seg sg-moodle">
+      <span class="seg-icon">🎓</span>
+      <div class="seg-name">Moodle + Plugins</div>
+      <div class="seg-tagline">La plataforma institucional con máximo poder</div>
+      <ul class="seg-features">
+        <li>Plugin Level Up!: sistema de niveles y XP integrado</li>
+        <li>Insignias (badges) con criterios automáticos de concesión</li>
+        <li>Informes de actividad detallados por estudiante</li>
+        <li>Rutas de aprendizaje adaptativas según el progreso</li>
+        <li>Integración total con el campus virtual de UNIR</li>
+      </ul>
+      <a href="https://moodle.org/plugins/block_xp" target="_blank" class="seg-link sl-moodle">🔗 Plugin Level Up!</a>
+    </div>
+  </div>
+
+  <!-- EVALUACIÓN GAMIFICADA -->
+  <div class="sec-label rv" style="margin-top:3rem">🏆 Evaluación de proyectos gamificados</div>
+  <h3 class="sec-title rv" style="font-size:clamp(1.4rem,3vw,2rem)">Seis enfoques para evaluar sin romper el juego</h3>
+  <p class="sec-sub rv">La evaluación en un proyecto gamificado no es un examen al final: es un proceso continuo, integrado en la narrativa y visible para el estudiante en todo momento.</p>
+
+  <div class="eval-grid rv">
+    <div class="eval">
+      <span class="eval-icon">🏅</span>
+      <div class="eval-title">Insignias y logros digitales</div>
+      <div class="eval-desc">Badges que se otorgan automáticamente al demostrar una competencia. Visibles en el perfil del estudiante y exportables como credenciales digitales.</div>
+      <div class="eval-tool">🛠 Open Badges · Moodle · Classcraft</div>
+      <a href="https://openbadges.org" target="_blank" class="eval-link">🔗 Open Badges Foundation</a>
+    </div>
+    <div class="eval">
+      <span class="eval-icon">📈</span>
+      <div class="eval-title">Puntos de experiencia (XP)</div>
+      <div class="eval-desc">Sistema de puntuación acumulativa que refleja el progreso del estudiante. Los XP se ganan por participación, calidad del trabajo y colaboración.</div>
+      <div class="eval-tool">🛠 Classcraft · Moodle Level Up! · Genially</div>
+      <a href="https://moodle.org/plugins/block_xp" target="_blank" class="eval-link">🔗 Plugin Level Up! para Moodle</a>
+    </div>
+    <div class="eval">
+      <span class="eval-icon">📁</span>
+      <div class="eval-title">Portfolio digital gamificado</div>
+      <div class="eval-desc">Colección de evidencias de aprendizaje organizadas como un "libro de aventuras". El estudiante construye su narrativa de aprendizaje a lo largo del curso.</div>
+      <div class="eval-tool">🛠 Seesaw · Google Sites · Notion</div>
+      <a href="https://web.seesaw.me" target="_blank" class="eval-link">🔗 Seesaw Portfolio</a>
+    </div>
+    <div class="eval">
+      <span class="eval-icon">🎯</span>
+      <div class="eval-title">Rúbricas gamificadas</div>
+      <div class="eval-desc">Rúbricas con lenguaje narrativo (Aprendiz → Explorador → Maestro → Leyenda) que el estudiante conoce desde el inicio y puede autoevaluarse.</div>
+      <div class="eval-tool">🛠 Rubistar · Google Forms · Canva</div>
+      <a href="https://rubistar.4teachers.org" target="_blank" class="eval-link">🔗 Rubistar (generador de rúbricas)</a>
+    </div>
+    <div class="eval">
+      <span class="eval-icon">📊</span>
+      <div class="eval-title">Analítica del aprendizaje</div>
+      <div class="eval-desc">Datos de engagement, tiempo de dedicación, patrones de error y progresión. Permite intervención temprana antes de que el estudiante abandone.</div>
+      <div class="eval-tool">🛠 Moodle Analytics · Google Data Studio</div>
+      <a href="https://analytics.google.com" target="_blank" class="eval-link">🔗 Google Looker Studio</a>
+    </div>
+    <div class="eval">
+      <span class="eval-icon">🤝</span>
+      <div class="eval-title">Coevaluación y autoevaluación</div>
+      <div class="eval-desc">Los estudiantes evalúan el trabajo de sus compañeros y el propio usando criterios claros. Desarrolla metacognición y pensamiento crítico.</div>
+      <div class="eval-tool">🛠 Peergrade · Google Forms · Mentimeter</div>
+      <a href="https://www.peergrade.io" target="_blank" class="eval-link">🔗 Peergrade (coevaluación online)</a>
+    </div>
+  </div>
+
+  <div class="quote rv">
+    <blockquote>La evaluación gamificada no mide lo que el estudiante sabe en un momento puntual. Mide quién se ha convertido a lo largo del proceso de aprendizaje.</blockquote>
+    <cite>— Adaptado de Wiggins & McTighe, Understanding by Design (2005)</cite>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TALLER GRUPAL -->
+<section id="taller">
+  <div class="sec-label rv">🔥 Taller grupal</div>
+  <h2 class="sec-title rv">¡Ahora es vuestro turno!</h2>
+
+  <div class="taller-box rv">
+    <div class="taller-header">
+      <div class="taller-header-icon">⚡</div>
+      <div>
+        <h3>Taller: Diseña el tablero de tu proyecto gamificado</h3>
+        <p>20 minutos · Trabajo en equipo · Herramienta: Trello, Notion o Miro</p>
+      </div>
+    </div>
+    <div class="taller-body">
+      <div style="margin-bottom:1.5rem">
+        <a href="https://www.youtube.com/watch?v=iVaFVa7HYj4" target="_blank" class="video-btn">
+          <span class="vb-icon">▶</span>
+          Ver vídeo motivacional: "Por qué los proyectos gamificados transforman el aprendizaje"
+        </a>
+      </div>
+      <div class="taller-grid">
+        <div class="taller-col">
+          <h4>🎯 Objetivo</h4>
+          <p style="font-size:.82rem;color:rgba(255,255,255,.75);line-height:1.7;margin-bottom:1rem">Crear el tablero de gestión de vuestro propio proyecto gamificado, aplicando las 5 fases y al menos una herramienta de seguimiento del alumnado.</p>
+          <h4 style="margin-top:1rem">📋 Paso a paso</h4>
+          <ol class="taller-steps">
+            <li data-n="1">Elegid la herramienta: Trello, Notion o Miro (2 min)</li>
+            <li data-n="2">Cread las 5 columnas del Kanban (una por fase) (3 min)</li>
+            <li data-n="3">Añadid al menos 3 tareas en cada columna (8 min)</li>
+            <li data-n="4">Asignad responsables y fechas límite (3 min)</li>
+            <li data-n="5">Compartid el enlace público en el chat (1 min)</li>
+            <li data-n="6">Presentad vuestro tablero al grupo (3 min)</li>
+          </ol>
+        </div>
+        <div class="taller-col">
+          <h4>🏆 Resultado esperado</h4>
+          <ul style="list-style:none;padding:0">
+            <li style="font-size:.82rem;color:rgba(255,255,255,.75);padding:.4rem 0 .4rem 1.5rem;position:relative;border-bottom:1px solid rgba(255,255,255,.05)"><span style="position:absolute;left:0;color:var(--mint)">✓</span> Tablero con 5 columnas y mínimo 15 tareas</li>
+            <li style="font-size:.82rem;color:rgba(255,255,255,.75);padding:.4rem 0 .4rem 1.5rem;position:relative;border-bottom:1px solid rgba(255,255,255,.05)"><span style="position:absolute;left:0;color:var(--mint)">✓</span> Al menos 1 herramienta de seguimiento identificada</li>
+            <li style="font-size:.82rem;color:rgba(255,255,255,.75);padding:.4rem 0 .4rem 1.5rem;position:relative;border-bottom:1px solid rgba(255,255,255,.05)"><span style="position:absolute;left:0;color:var(--mint)">✓</span> Enlace público compartido en el chat</li>
+            <li style="font-size:.82rem;color:rgba(255,255,255,.75);padding:.4rem 0 .4rem 1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--mint)">✓</span> Presentación oral de 2 minutos por equipo</li>
+          </ul>
+          <h4 style="margin-top:1.5rem">🔗 Recursos de apoyo</h4>
+          <div style="display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem">
+            <a href="https://trello.com/templates/education" target="_blank" style="font-size:.78rem;color:var(--blue-l);text-decoration:none">📋 Plantillas educativas de Trello</a>
+            <a href="https://www.notion.so/templates/education" target="_blank" style="font-size:.78rem;color:var(--blue-l);text-decoration:none">📓 Plantillas educativas de Notion</a>
+            <a href="https://miro.com/templates/kanban-board/" target="_blank" style="font-size:.78rem;color:var(--blue-l);text-decoration:none">🖼️ Plantilla Kanban en Miro</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CHECKLIST -->
+<section id="checklist">
+  <div class="sec-label rv">✅ Checklist de calidad</div>
+  <h2 class="sec-title rv">Antes de entregar tu proyecto gamificado</h2>
+  <p class="sec-sub rv">Usa esta lista para verificar que tu proyecto cumple con todos los criterios de calidad pedagógica y técnica. Haz clic en cada ítem para marcarlo.</p>
+
+  <div class="checklist-grid rv">
+    <div class="checklist-col">
+      <h3>🗺️ Planificación y diseño</h3>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-text">Los objetivos de aprendizaje están definidos en formato SMART</div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-text">Existe una narrativa coherente que da sentido a toda la experiencia</div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-text">Las mecánicas de juego están alineadas con los objetivos pedagógicos</div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-text">El mapa de progreso es visible y comprensible para el alumnado</div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-text">El sistema de recompensas es justo, transparente y motivador</div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-text">Se ha realizado una prueba piloto antes del lanzamiento oficial</div></div>
+    </div>
+    <div class="checklist-col">
+      <h3>📊 Seguimiento y evaluación</h3>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-text">Existe al menos una herramienta de seguimiento en tiempo real</div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-text">La rúbrica de evaluación usa lenguaje narrativo gamificado</div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-text">El alumnado conoce los criterios de evaluación desde el inicio</div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-text">Hay un mecanismo de feedback inmediato para el estudiante</div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-text">Se incluye autoevaluación y/o coevaluación en el proceso</div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div class="check-text">Existe un plan de mejora basado en los datos recogidos</div></div>
+    </div>
+  </div>
+  <div class="cl-progress rv">
+    <div class="cl-bar"><div class="cl-fill" id="clFill" style="width:0%"></div></div>
+    <div class="cl-pct" id="clPct">0 / 12 completados</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- RECURSOS -->
+<section id="recursos">
+  <div class="sec-label rv">📚 Recursos y referencias</div>
+  <h2 class="sec-title rv">Para profundizar y seguir aprendiendo</h2>
+  <div class="recursos-grid rv">
+    <div class="rec">
+      <span class="rec-icon">📖</span>
+      <div class="rec-title">For the Win — Werbach & Hunter</div>
+      <div class="rec-desc">El libro de referencia sobre gamificación empresarial y educativa. Base teórica de las 5 fases del proyecto.</div>
+      <a href="https://www.amazon.es/Win-Gamification-Revolutionize-Business-Wharton/dp/1613630239" target="_blank" class="rec-link">🔗 Ver en Amazon</a>
+    </div>
+    <div class="rec">
+      <span class="rec-icon">🎓</span>
+      <div class="rec-title">Gamification & Behavioral Change</div>
+      <div class="rec-desc">Curso de Coursera de la Universidad de Pensilvania sobre gamificación y cambio de comportamiento.</div>
+      <a href="https://www.coursera.org/learn/gamification" target="_blank" class="rec-link">🔗 Ver en Coursera</a>
+    </div>
+    <div class="rec">
+      <span class="rec-icon">📊</span>
+      <div class="rec-title">Learning Analytics en Educación</div>
+      <div class="rec-desc">Informe de la OCDE sobre analítica del aprendizaje y su impacto en la personalización educativa.</div>
+      <a href="https://www.oecd.org/education/ceri/learning-analytics.htm" target="_blank" class="rec-link">🔗 Ver informe OCDE</a>
+    </div>
+    <div class="rec">
+      <span class="rec-icon">🏅</span>
+      <div class="rec-title">Open Badges Foundation</div>
+      <div class="rec-desc">Estándar internacional para credenciales digitales verificables. Crea y emite insignias para tu alumnado.</div>
+      <a href="https://openbadges.org" target="_blank" class="rec-link">🔗 Open Badges</a>
+    </div>
+    <div class="rec">
+      <span class="rec-icon">🎮</span>
+      <div class="rec-title">Classcraft — Guía para docentes</div>
+      <div class="rec-desc">Tutorial completo para implementar Classcraft en el aula: configuración, mecánicas y seguimiento.</div>
+      <a href="https://help.classcraft.com/hc/es" target="_blank" class="rec-link">🔗 Centro de ayuda Classcraft</a>
+    </div>
+    <div class="rec">
+      <span class="rec-icon">📋</span>
+      <div class="rec-title">Trello para educadores</div>
+      <div class="rec-desc">Guía oficial de Trello con plantillas y casos de uso específicos para la gestión de proyectos educativos.</div>
+      <a href="https://trello.com/en/education" target="_blank" class="rec-link">🔗 Trello Education</a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CIERRE -->
+<section>
+  <div class="cierre rv">
+    <span class="cierre-icon">🚀</span>
+    <h2>
+      <span style="background:linear-gradient(135deg,#fff,rgba(255,255,255,.8));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Ahora tienes las herramientas.</span><br>
+      <span style="background:linear-gradient(135deg,var(--gold-l),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Úsalas para transformar el aprendizaje.</span>
+    </h2>
+    <p class="cierre-quote">Un proyecto gamificado bien gestionado no es solo una experiencia de aprendizaje más atractiva. Es la demostración de que el aprendizaje puede ser tan absorbente, tan retador y tan significativo como el mejor videojuego que hayas jugado.</p>
+    <div class="cierre-cards">
+      <div class="cc"><span class="cc-icon">🗺️</span><div class="cc-text">Las 5 fases son tu hoja de ruta. No las saltes: cada una existe por una razón pedagógica.</div></div>
+      <div class="cc"><span class="cc-icon">📊</span><div class="cc-text">El seguimiento invisible es tu superpoder. Los datos te permiten intervenir antes de que sea tarde.</div></div>
+      <div class="cc"><span class="cc-icon">🔄</span><div class="cc-text">La iteración no es un fracaso: es el corazón del diseño centrado en el aprendizaje.</div></div>
+    </div>
+    <div class="next-tema">
+      <div class="nt-icon">🤖</div>
+      <div class="nt-text">
+        <div class="nt-label">Próxima clase · Tema 9</div>
+        <div class="nt-title">Aplicaciones de Inteligencia Artificial en Educación</div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <script>
-let cur=0,total=9;
-const rc={};
-for(let i=0;i<total;i++) rc[i]=-1;
-
-function upNav(){
-  document.getElementById('cnt').textContent=(cur+1)+' / '+total;
-  document.getElementById('prevBtn').disabled=cur===0;
-  document.getElementById('nextBtn').disabled=cur===total-1;
-  document.getElementById('pbar').style.width=((cur+1)/total*100).toFixed(1)+'%';
-}
-function go(n){
-  document.getElementById('s'+cur).classList.remove('on');
-  cur=n;
-  document.getElementById('s'+cur).classList.add('on');
-  upNav();
-  autoFirst();
-}
-function next(){if(cur<total-1) go(cur+1);}
-function prev(){if(cur>0) go(cur-1);}
-
-function handleClick(){
-  const items=document.querySelectorAll('[data-s="'+cur+'"]');
-  const max=items.length-1;
-  if(rc[cur]<max){
-    rc[cur]++;
-    const el=document.querySelector('[data-s="'+cur+'"][data-o="'+rc[cur]+'"]');
-    if(el) el.classList.add('show');
-  } else {
-    if(cur<total-1) next();
-  }
-  upHint();
-}
-function upHint(){
-  const items=document.querySelectorAll('[data-s="'+cur+'"]');
-  const max=items.length-1;
-  const h=document.getElementById('hint');
-  if(rc[cur]<max) h.textContent='Haz clic para revelar · '+(rc[cur]+2)+' de '+(max+1);
-  else if(cur<total-1) h.textContent='Haz clic para avanzar →';
-  else h.textContent='¡Has completado las Clases 15 y 16! 🎉';
-}
-function autoFirst(){
-  const el=document.querySelector('[data-s="'+cur+'"][data-o="0"]');
-  if(el&&!el.classList.contains('show')){
-    setTimeout(()=>{el.classList.add('show');rc[cur]=0;upHint();},280);
-  }
-}
-function toggleIdx(){document.getElementById('idxOverlay').classList.toggle('open');}
-
-document.addEventListener('keydown',function(e){
-  if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();handleClick();}
-  if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();prev();}
-  if(e.key==='Escape') toggleIdx();
+// BARRA DE PROGRESO
+window.addEventListener('scroll', () => {
+  const s = document.documentElement;
+  const pct = (s.scrollTop / (s.scrollHeight - s.clientHeight)) * 100;
+  document.getElementById('progress').style.width = pct + '%';
 });
 
-// Particles
-(function(){
-  const c=document.getElementById('pts0');
-  if(!c) return;
-  const cols=['#003DA5','#7B1D2E','#F5A623','#fff'];
-  for(let i=0;i<18;i++){
-    const p=document.createElement('div');
-    p.className='pt';
-    const s=Math.random()*8+4;
-    p.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${Math.random()*14+10}s;animation-delay:${Math.random()*10}s;`;
-    c.appendChild(p);
-  }
-})();
+// REVEAL ON SCROLL
+const rvEls = document.querySelectorAll('.rv');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('on'); obs.unobserve(e.target); } });
+}, { threshold: 0.1 });
+rvEls.forEach(el => obs.observe(el));
 
-autoFirst();upNav();upHint();
+// NAV ACTIVE
+const sections = document.querySelectorAll('section[id]');
+window.addEventListener('scroll', () => {
+  let cur = '';
+  sections.forEach(s => { if(window.scrollY >= s.offsetTop - 80) cur = s.id; });
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+  });
+});
+
+// MODAL FASES
+const fasesData = [
+  {
+    img: 'images/instructional_design.png',
+    title: 'Fase 1: Planificación estratégica',
+    text: 'La planificación estratégica es el cimiento de todo proyecto gamificado. En esta fase se define el contexto educativo, se analiza el perfil del alumnado, se establecen los objetivos de aprendizaje en formato SMART y se valida la viabilidad del proyecto. Sin una planificación sólida, las fases siguientes carecen de dirección pedagógica.',
+    tags: ['Objetivos SMART', 'KPIs educativos', 'Perfil del alumnado', 'Análisis de contexto', 'Viabilidad']
+  },
+  {
+    img: 'images/mindmap_project.jpg',
+    title: 'Fase 2: Diseño de la experiencia',
+    text: 'El diseño es donde la pedagogía se convierte en narrativa. Se crea el universo del juego: la historia que da sentido a todo, las mecánicas que generan engagement, las dinámicas que provocan las emociones deseadas y la estética que hace la experiencia memorable. El diseño centrado en el aprendizaje es el principio rector.',
+    tags: ['Narrativa gamificada', 'Mecánicas de juego', 'Dinámicas de aprendizaje', 'Estética visual', 'Mapa de progreso']
+  },
+  {
+    img: 'images/gamification_learning.jpeg',
+    title: 'Fase 3: Desarrollo de recursos',
+    text: 'En esta fase se materializan las decisiones de diseño: se crean los recursos multimedia, se configuran las plataformas digitales, se producen los materiales de aprendizaje y se realiza la prueba piloto. La calidad de los recursos determina la credibilidad de la narrativa y la inmersión del alumnado.',
+    tags: ['Recursos multimedia', 'Configuración de plataformas', 'Prototipado', 'Prueba piloto', 'Control de calidad']
+  },
+  {
+    img: 'images/trello_classroom.png',
+    title: 'Fase 4: Implementación en el aula',
+    text: 'El lanzamiento es el momento de mayor adrenalina pedagógica. Se pone en marcha la experiencia, se gestiona la dinámica del grupo, se monitoriza el engagement en tiempo real y se realizan los ajustes necesarios sobre la marcha. La flexibilidad y la capacidad de improvisación son competencias clave del docente gamificador.',
+    tags: ['Lanzamiento oficial', 'Gestión del grupo', 'Monitoreo en tiempo real', 'Adaptación', 'Feedback continuo']
+  },
+  {
+    img: 'images/learning_dashboard.jpg',
+    title: 'Fase 5: Evaluación e iteración',
+    text: 'La evaluación no es el final: es el inicio del siguiente ciclo de mejora. Se analizan las métricas de aprendizaje y engagement, se recoge feedback del alumnado, se reflexiona sobre el impacto pedagógico y se diseña el plan de mejora para la siguiente implementación. La iteración es el corazón del diseño centrado en el aprendizaje.',
+    tags: ['Métricas de impacto', 'Análisis de datos', 'Reflexión docente', 'Feedback del alumnado', 'Plan de mejora']
+  }
+];
+
+function openFaseModal(i) {
+  const d = fasesData[i];
+  document.getElementById('modalImg').src = d.img;
+  document.getElementById('modalImg').alt = d.title;
+  document.getElementById('modalTitle').textContent = d.title;
+  document.getElementById('modalText').textContent = d.text;
+  document.getElementById('modalTags').innerHTML = d.tags.map(t => `<span class="modal-tag">${t}</span>`).join('');
+  document.getElementById('faseModal').classList.add('open');
+}
+document.getElementById('faseModal').addEventListener('click', function(e) {
+  if(e.target === this) this.classList.remove('open');
+});
+
+// QUIZ
+let qScore = 0;
+const qAnswers = [1, 2, 1, 0, 2];
+const qFeedback = [
+  ['Incorrecto. La planificación estratégica es la primera fase.', 'Correcto. La planificación estratégica define el contexto, objetivos y viabilidad del proyecto.', 'Incorrecto. El desarrollo viene después del diseño.', 'Incorrecto. La implementación es la cuarta fase.'],
+  ['Incorrecto. Asana es para gestión de tareas, no para diseño visual.', 'Incorrecto. Trello es para gestión de tareas con tableros Kanban.', 'Correcto. Miro es la pizarra colaborativa ideal para brainstorming y diseño visual.', 'Incorrecto. ClickUp es una plataforma de gestión integral.'],
+  ['Incorrecto. Las tarjetas no representan estudiantes.', 'Correcto. Cada tarjeta representa una tarea específica con responsable, fecha y checklist.', 'Incorrecto. Las sesiones se planifican a nivel de columna o proyecto.', 'Incorrecto. Los objetivos se definen a nivel de proyecto, no de tarjeta.'],
+  ['Correcto. SMART: Específicos, Medibles, Alcanzables, Relevantes y Temporales.', 'Incorrecto. Esta definición no corresponde al acrónimo SMART.', 'Incorrecto. Esta definición no corresponde al acrónimo SMART.', 'Incorrecto. Esta definición no corresponde al acrónimo SMART.'],
+  ['Incorrecto. La planificación define los objetivos, no hace la prueba piloto.', 'Incorrecto. El diseño crea la experiencia, no la prueba.', 'Correcto. La prueba piloto se realiza al final de la fase de desarrollo, antes del lanzamiento oficial.', 'Incorrecto. La evaluación ocurre después de la implementación.']
+];
+
+function answerQ(qIdx, optIdx, correctIdx) {
+  const q = document.getElementById('q' + qIdx);
+  const opts = q.querySelectorAll('.qopt');
+  opts.forEach((o, i) => {
+    o.disabled = true;
+    if(i === correctIdx) o.classList.add('correct');
+    else if(i === optIdx && optIdx !== correctIdx) o.classList.add('wrong');
+  });
+  const fb = document.getElementById('fb' + qIdx);
+  fb.textContent = qFeedback[qIdx][optIdx];
+  fb.className = 'quiz-fb show ' + (optIdx === correctIdx ? 'ok' : 'ko');
+  if(optIdx === correctIdx) qScore++;
+  document.getElementById('nq' + qIdx).style.display = 'inline-flex';
+  document.getElementById('qpf').style.width = ((qIdx + 1) / 5 * 100) + '%';
+}
+
+function nextQ(n) {
+  document.getElementById('q' + (n-1)).classList.remove('active');
+  document.getElementById('q' + n).classList.add('active');
+}
+
+function showScore() {
+  document.getElementById('q4').classList.remove('active');
+  const sc = document.getElementById('quizScore');
+  sc.classList.add('show');
+  document.getElementById('scoreNum').textContent = qScore + '/5';
+  const msgs = ['Sigue practicando. Repasa las fases del proyecto.', 'Bien. Tienes buena base, repasa los detalles.', 'Muy bien. Dominas los conceptos clave.', 'Excelente. Estás listo para diseñar tu proyecto gamificado.'];
+  document.getElementById('scoreTxt').textContent = msgs[Math.min(Math.floor(qScore/1.5), 3)];
+  document.getElementById('qpf').style.width = '100%';
+}
+
+function resetQuiz() {
+  qScore = 0;
+  for(let i = 0; i < 5; i++) {
+    const q = document.getElementById('q' + i);
+    q.classList.remove('active');
+    q.querySelectorAll('.qopt').forEach(o => { o.disabled = false; o.classList.remove('correct','wrong'); });
+    document.getElementById('fb' + i).className = 'quiz-fb';
+    document.getElementById('nq' + i).style.display = 'none';
+  }
+  document.getElementById('quizScore').classList.remove('show');
+  document.getElementById('q0').classList.add('active');
+  document.getElementById('qpf').style.width = '20%';
+}
+
+// CHECKLIST
+function toggleCheck(el) {
+  el.classList.toggle('checked');
+  if(el.classList.contains('checked')) el.querySelector('.check-box').textContent = '✓';
+  else el.querySelector('.check-box').textContent = '';
+  const all = document.querySelectorAll('.check-item');
+  const done = document.querySelectorAll('.check-item.checked').length;
+  document.getElementById('clFill').style.width = (done / all.length * 100) + '%';
+  document.getElementById('clPct').textContent = done + ' / ' + all.length + ' completados';
+}
 </script>
 </body>
 </html>

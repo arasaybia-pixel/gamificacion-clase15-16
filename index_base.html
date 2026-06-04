@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase 11 · Diseño y Storytelling · Máster Gamificación UNIR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== DESIGN TOKENS — Paleta gamificada coherente ===== */
+    :root {
+      --bg:        #07071a;
+      --bg2:       #0d0d2b;
+      --purple:    #7c3aed;
+      --purple-l:  #a78bfa;
+      --teal:      #0891b2;
+      --teal-l:    #38bdf8;
+      --orange:    #ea580c;
+      --orange-l:  #fb923c;
+      --green:     #059669;
+      --green-l:   #34d399;
+      --pink:      #db2777;
+      --pink-l:    #f472b6;
+      --yellow:    #d97706;
+      --yellow-l:  #fbbf24;
+      --text:      #f1f5f9;
+      --muted:     #94a3b8;
+      --card:      rgba(255,255,255,0.04);
+      --border:    rgba(255,255,255,0.08);
+      --radius:    16px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; line-height: 1.7; overflow-x: hidden; }
+
+    /* ===== BARRA DE PROGRESO ===== */
+    #progress { position: fixed; top: 0; left: 0; height: 4px; background: linear-gradient(90deg, var(--purple), var(--teal-l), var(--orange-l)); width: 0%; z-index: 9999; transition: width .1s; }
+
+    /* ===== NAVEGACIÓN ===== */
+    nav { position: fixed; top: 4px; left: 0; right: 0; z-index: 1000; background: rgba(7,7,26,0.94); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+    .nav-brand { display: flex; align-items: center; gap: .75rem; }
+    .nav-pill { background: linear-gradient(135deg, var(--purple), var(--teal)); color: #fff; font-size: .65rem; font-weight: 800; padding: .25rem .65rem; border-radius: 6px; letter-spacing: .06em; text-transform: uppercase; }
+    .nav-sub { font-size: .78rem; color: var(--muted); font-weight: 500; }
+    .nav-links { display: flex; gap: .2rem; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: .75rem; font-weight: 600; padding: .35rem .75rem; border-radius: 8px; transition: all .2s; }
+    .nav-links a:hover, .nav-links a.active { color: #fff; background: rgba(124,58,237,.25); }
+
+    /* ===== HERO ===== */
+    .hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; padding: 7rem 2rem 5rem; }
+    .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% -5%, rgba(124,58,237,.45) 0%, transparent 65%), radial-gradient(ellipse 55% 45% at 85% 85%, rgba(8,145,178,.25) 0%, transparent 60%), var(--bg); }
+    .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(124,58,237,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(124,58,237,.07) 1px, transparent 1px); background-size: 56px 56px; }
+    .hero-content { position: relative; z-index: 2; text-align: center; max-width: 860px; }
+    .hero-tag { display: inline-flex; align-items: center; gap: .5rem; background: rgba(124,58,237,.18); border: 1px solid rgba(124,58,237,.4); color: var(--purple-l); font-size: .72rem; font-weight: 700; padding: .4rem 1.1rem; border-radius: 100px; margin-bottom: 2rem; letter-spacing: .1em; text-transform: uppercase; }
+    .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.4rem, 6vw, 4.2rem); font-weight: 900; line-height: 1.1; margin-bottom: 1.5rem; }
+    .hero h1 .l1 { color: #fff; display: block; }
+    .hero h1 .l2 { background: linear-gradient(135deg, var(--teal-l), var(--purple-l)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: block; }
+    .hero h1 .l3 { background: linear-gradient(135deg, var(--orange-l), var(--pink-l)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: block; }
+    .hero-desc { font-size: 1.05rem; color: var(--muted); max-width: 620px; margin: 0 auto 2.5rem; line-height: 1.8; }
+    .hero-meta { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
+    .hero-meta span { font-size: .8rem; color: var(--muted); }
+    .hero-meta strong { color: #fff; }
+    .ctas { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: .5rem; padding: .85rem 1.8rem; border-radius: 10px; font-weight: 700; font-size: .88rem; text-decoration: none; transition: all .3s; }
+    .btn-a { background: linear-gradient(135deg, var(--purple), var(--teal)); color: #fff; }
+    .btn-a:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(124,58,237,.4); }
+    .btn-b { background: linear-gradient(135deg, var(--orange), var(--pink)); color: #fff; }
+    .btn-b:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(234,88,12,.4); }
+    .btn-c { background: var(--card); border: 1px solid var(--border); color: #fff; }
+    .btn-c:hover { background: rgba(255,255,255,.08); transform: translateY(-2px); }
+    /* floating chips */
+    .floats { position: absolute; inset: 0; pointer-events: none; }
+    .fc { position: absolute; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: .6rem 1.1rem; font-size: .78rem; font-weight: 700; backdrop-filter: blur(10px); animation: float 6s ease-in-out infinite; }
+    .fc:nth-child(1){top:18%;left:4%;color:var(--teal-l);border-color:rgba(56,189,248,.3);animation-delay:0s}
+    .fc:nth-child(2){top:22%;right:4%;color:var(--orange-l);border-color:rgba(251,146,60,.3);animation-delay:1.5s}
+    .fc:nth-child(3){bottom:28%;left:3%;color:var(--pink-l);border-color:rgba(244,114,182,.3);animation-delay:3s}
+    .fc:nth-child(4){bottom:22%;right:3%;color:var(--green-l);border-color:rgba(52,211,153,.3);animation-delay:4.5s}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+
+    /* ===== LAYOUT ===== */
+    section { padding: 5rem 2rem; max-width: 1160px; margin: 0 auto; }
+    .divider { width: 100%; height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); }
+    .sec-label { display: inline-flex; align-items: center; gap: .5rem; font-size: .68rem; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; color: var(--purple-l); margin-bottom: .75rem; }
+    .sec-title { font-family: 'Playfair Display', serif; font-size: clamp(1.7rem, 3.5vw, 2.6rem); font-weight: 900; color: #fff; line-height: 1.2; margin-bottom: .75rem; }
+    .sec-sub { font-size: 1rem; color: var(--muted); max-width: 680px; margin-bottom: 2.5rem; line-height: 1.8; }
+
+    /* ===== REVEAL ===== */
+    .rv { opacity: 0; transform: translateY(28px); transition: all .7s ease; }
+    .rv.on { opacity: 1; transform: translateY(0); }
+
+    /* ===== PROBLEMA ===== */
+    .problema { background: linear-gradient(135deg, rgba(124,58,237,.14), rgba(8,145,178,.1)); border: 1px solid rgba(124,58,237,.3); border-radius: 20px; padding: 3rem; text-align: center; position: relative; overflow: hidden; }
+    .problema::before { content: '?'; position: absolute; top: -30px; right: 20px; font-size: 14rem; font-weight: 900; color: rgba(124,58,237,.06); font-family: 'Playfair Display', serif; line-height: 1; }
+    .problema blockquote { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.9rem); font-weight: 700; color: #fff; line-height: 1.5; position: relative; z-index: 1; }
+    .problema blockquote::before { content: '"'; color: var(--purple-l); font-size: 4rem; line-height: 0; vertical-align: -1.5rem; }
+    .problema blockquote::after { content: '"'; color: var(--purple-l); font-size: 4rem; line-height: 0; vertical-align: -1.5rem; }
+
+    /* ===== AGENDA ===== */
+    .agenda-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1.25rem; }
+    .ag { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.75rem 1.4rem; transition: all .3s; position: relative; overflow: hidden; }
+    .ag::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+    .ag:nth-child(1)::before{background:linear-gradient(90deg,var(--purple),var(--teal))}
+    .ag:nth-child(2)::before{background:linear-gradient(90deg,var(--teal),var(--green))}
+    .ag:nth-child(3)::before{background:linear-gradient(90deg,var(--orange),var(--pink))}
+    .ag:nth-child(4)::before{background:linear-gradient(90deg,var(--pink),var(--purple))}
+    .ag:nth-child(5)::before{background:linear-gradient(90deg,var(--yellow),var(--orange))}
+    .ag:hover { transform: translateY(-4px); border-color: rgba(255,255,255,.14); }
+    .ag-num { font-size: 2.2rem; font-weight: 900; color: rgba(255,255,255,.07); font-family: 'Playfair Display', serif; line-height: 1; margin-bottom: .6rem; }
+    .ag-icon { font-size: 1.6rem; margin-bottom: .6rem; display: block; }
+    .ag-title { font-size: .88rem; font-weight: 700; color: #fff; }
+
+    /* ===== OBJETIVOS ===== */
+    .obj-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1.25rem; }
+    .obj { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.6rem; display: flex; gap: 1rem; align-items: flex-start; transition: all .3s; }
+    .obj:hover { transform: translateY(-3px); border-color: rgba(124,58,237,.3); }
+    .obj-ico { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0; }
+    .obj h4 { font-size: .88rem; font-weight: 700; color: #fff; margin-bottom: .35rem; }
+    .obj p { font-size: .81rem; color: var(--muted); line-height: 1.65; }
+
+    /* ===== IMAGEN FULL + TEXTO ===== */
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; margin-bottom: 4rem; }
+    .split.rev { direction: rtl; }
+    .split.rev > * { direction: ltr; }
+    .split-text h3 { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 900; color: #fff; margin-bottom: .9rem; line-height: 1.25; }
+    .split-text p { color: var(--muted); font-size: .93rem; line-height: 1.85; margin-bottom: .9rem; }
+    .split-text p strong { color: #fff; }
+    .split-img { border-radius: 18px; overflow: hidden; border: 1px solid var(--border); }
+    .split-img img { width: 100%; height: 280px; object-fit: cover; display: block; }
+
+    /* ===== TARJETAS PRINCIPIO ===== */
+    .prin-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 2.5rem; }
+    .prin { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.9rem; transition: all .3s; }
+    .prin:hover { transform: translateY(-4px); }
+    .prin-num { font-size: 2.8rem; font-weight: 900; font-family: 'Playfair Display', serif; line-height: 1; margin-bottom: .9rem; }
+    .prin h4 { font-size: .95rem; font-weight: 700; color: #fff; margin-bottom: .7rem; }
+    .prin p { font-size: .83rem; color: var(--muted); line-height: 1.7; }
+    .prin ul { list-style: none; padding: 0; margin-top: .8rem; }
+    .prin ul li { font-size: .8rem; color: var(--muted); padding: .28rem 0 .28rem 1.3rem; position: relative; }
+    .prin ul li::before { content: '→'; position: absolute; left: 0; color: var(--purple-l); }
+
+    /* ===== REGLA 6×6 ===== */
+    .regla { background: linear-gradient(135deg, rgba(234,88,12,.1), rgba(219,39,119,.08)); border: 1px solid rgba(234,88,12,.3); border-radius: 20px; padding: 2.5rem; margin-bottom: 2.5rem; }
+    .regla h3 { font-size: 1.25rem; font-weight: 800; color: var(--orange-l); margin-bottom: .75rem; }
+    .regla-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.25rem; }
+    .regla-item { background: rgba(255,255,255,.04); border-radius: 12px; padding: 1.25rem; }
+    .regla-item .rn { font-size: 2.8rem; font-weight: 900; color: var(--orange-l); font-family: 'Playfair Display', serif; line-height: 1; }
+    .regla-item p { font-size: .84rem; color: var(--muted); margin-top: .4rem; line-height: 1.7; }
+
+    /* ===== COLOR CARDS ===== */
+    .color-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; }
+    .cc { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.6rem; transition: all .3s; }
+    .cc:hover { transform: translateY(-3px); }
+    .swatch { width: 100%; height: 72px; border-radius: 10px; margin-bottom: .9rem; display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 800; color: #fff; letter-spacing: .12em; text-transform: uppercase; }
+    .cc h4 { font-size: .9rem; font-weight: 700; color: #fff; margin-bottom: .45rem; }
+    .cc p { font-size: .8rem; color: var(--muted); line-height: 1.65; }
+
+    /* ===== QUOTE ===== */
+    .quote { background: linear-gradient(135deg, rgba(124,58,237,.1), rgba(8,145,178,.07)); border-left: 4px solid var(--purple-l); border-radius: 0 12px 12px 0; padding: 1.5rem 2rem; margin: 2rem 0; }
+    .quote blockquote { font-size: 1rem; color: #fff; font-style: italic; line-height: 1.75; }
+    .quote cite { display: block; margin-top: .65rem; font-size: .8rem; color: var(--purple-l); font-style: normal; font-weight: 600; }
+
+    /* ===== ARC NARRATIVO ===== */
+    .arc-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 2.5rem; margin-bottom: 2rem; }
+    .arc-box h3 { font-size: 1.2rem; font-weight: 800; color: #fff; margin-bottom: .6rem; }
+    .arc-box > p { font-size: .88rem; color: var(--muted); margin-bottom: 2rem; line-height: 1.7; }
+    .arc-steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; position: relative; }
+    .arc-steps::before { content: ''; position: absolute; top: 30px; left: 10%; right: 10%; height: 2px; background: linear-gradient(90deg, var(--purple), var(--teal-l), var(--orange-l), var(--pink-l), var(--green-l)); z-index: 0; }
+    .arc-step { text-align: center; position: relative; z-index: 1; }
+    .arc-dot { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin: 0 auto 1rem; border: 3px solid; }
+    .arc-step:nth-child(1) .arc-dot{background:rgba(124,58,237,.2);border-color:var(--purple)}
+    .arc-step:nth-child(2) .arc-dot{background:rgba(8,145,178,.2);border-color:var(--teal)}
+    .arc-step:nth-child(3) .arc-dot{background:rgba(234,88,12,.2);border-color:var(--orange)}
+    .arc-step:nth-child(4) .arc-dot{background:rgba(219,39,119,.2);border-color:var(--pink)}
+    .arc-step:nth-child(5) .arc-dot{background:rgba(5,150,105,.2);border-color:var(--green)}
+    .arc-step h5 { font-size: .78rem; font-weight: 700; color: #fff; margin-bottom: .35rem; }
+    .arc-step p { font-size: .7rem; color: var(--muted); padding: 0 .4rem; line-height: 1.5; }
+
+    /* ===== TÉCNICAS ===== */
+    .tec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1.25rem; }
+    .tec { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.9rem; transition: all .3s; position: relative; overflow: hidden; }
+    .tec::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; }
+    .tec:nth-child(1)::after{background:linear-gradient(90deg,var(--purple),var(--teal))}
+    .tec:nth-child(2)::after{background:linear-gradient(90deg,var(--orange),var(--pink))}
+    .tec:nth-child(3)::after{background:linear-gradient(90deg,var(--teal),var(--green))}
+    .tec:nth-child(4)::after{background:linear-gradient(90deg,var(--yellow),var(--orange))}
+    .tec:nth-child(5)::after{background:linear-gradient(90deg,var(--pink),var(--purple))}
+    .tec:nth-child(6)::after{background:linear-gradient(90deg,var(--green),var(--teal))}
+    .tec:hover { transform: translateY(-4px); }
+    .tec-ico { font-size: 1.9rem; margin-bottom: .9rem; display: block; }
+    .tec h4 { font-size: .95rem; font-weight: 800; color: #fff; margin-bottom: .65rem; }
+    .tec p { font-size: .83rem; color: var(--muted); line-height: 1.7; }
+    .tec-ex { margin-top: .9rem; background: rgba(56,189,248,.08); border-radius: 8px; padding: .7rem .9rem; font-size: .78rem; color: var(--teal-l); font-style: italic; border-left: 3px solid var(--teal); }
+
+    /* ===== NEURO ===== */
+    .neuro-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.25rem; }
+    .nc { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.6rem; text-align: center; transition: all .3s; }
+    .nc:hover { transform: translateY(-4px); border-color: rgba(124,58,237,.3); }
+    .nc-ico { font-size: 2.2rem; margin-bottom: .8rem; display: block; }
+    .nc-stat { font-size: 1.9rem; font-weight: 900; font-family: 'Playfair Display', serif; margin-bottom: .2rem; }
+    .nc h4 { font-size: .85rem; font-weight: 700; color: #fff; margin-bottom: .4rem; }
+    .nc p { font-size: .78rem; color: var(--muted); line-height: 1.6; }
+
+    /* ===== ACTIVIDAD ===== */
+    .act-header { background: linear-gradient(135deg, rgba(234,88,12,.14), rgba(219,39,119,.09)); border: 1px solid rgba(234,88,12,.3); border-radius: 20px; padding: 2.75rem; margin-bottom: 2rem; }
+    .act-badge { display: inline-flex; align-items: center; gap: .5rem; background: rgba(234,88,12,.18); border: 1px solid rgba(234,88,12,.4); color: var(--orange-l); font-size: .72rem; font-weight: 700; padding: .35rem 1rem; border-radius: 100px; margin-bottom: 1.25rem; letter-spacing: .08em; text-transform: uppercase; }
+    .act-header h2 { font-family: 'Playfair Display', serif; font-size: 1.75rem; font-weight: 900; color: #fff; margin-bottom: .75rem; }
+    .act-header p { color: var(--muted); font-size: .93rem; line-height: 1.8; }
+    .chips { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1.25rem; }
+    .chip { background: rgba(255,255,255,.05); border: 1px solid var(--border); color: var(--muted); font-size: .73rem; font-weight: 600; padding: .28rem .7rem; border-radius: 100px; }
+    .chip.p{background:rgba(124,58,237,.15);border-color:rgba(124,58,237,.3);color:var(--purple-l)}
+    .chip.t{background:rgba(8,145,178,.15);border-color:rgba(8,145,178,.3);color:var(--teal-l)}
+    .chip.o{background:rgba(234,88,12,.15);border-color:rgba(234,88,12,.3);color:var(--orange-l)}
+    .chip.g{background:rgba(5,150,105,.15);border-color:rgba(5,150,105,.3);color:var(--green-l)}
+    .tarea-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+    .tarea { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.6rem; transition: all .3s; }
+    .tarea:hover { transform: translateY(-3px); }
+    .tarea-num { font-size: .68rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; margin-bottom: .65rem; }
+    .tarea h4 { font-size: .92rem; font-weight: 700; color: #fff; margin-bottom: .65rem; }
+    .tarea p { font-size: .82rem; color: var(--muted); line-height: 1.7; }
+    .tip { margin-top: .9rem; background: rgba(52,211,153,.08); border: 1px solid rgba(52,211,153,.2); border-radius: 8px; padding: .65rem .9rem; font-size: .77rem; color: var(--green-l); }
+
+    /* ===== EJEMPLO RESOLUCIÓN ===== */
+    .ej-wrap { background: linear-gradient(135deg, rgba(5,150,105,.1), rgba(8,145,178,.07)); border: 1px solid rgba(5,150,105,.25); border-radius: 20px; padding: 3rem; margin-bottom: 2rem; }
+    .ej-badge { display: inline-flex; align-items: center; gap: .5rem; background: rgba(5,150,105,.18); border: 1px solid rgba(5,150,105,.4); color: var(--green-l); font-size: .72rem; font-weight: 700; padding: .35rem 1rem; border-radius: 100px; margin-bottom: 1.25rem; letter-spacing: .08em; text-transform: uppercase; }
+    .ej-wrap h2 { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 900; color: #fff; margin-bottom: .65rem; }
+    .ej-wrap > p { color: var(--muted); font-size: .93rem; margin-bottom: 2rem; line-height: 1.8; }
+    /* Tarjeta de recurso dentro del ejemplo */
+    .ej-recurso { background: rgba(255,255,255,.04); border-radius: 14px; padding: 1.75rem; margin-bottom: 1.5rem; border-left: 4px solid; }
+    .ej-recurso.purple{border-color:var(--purple-l)}
+    .ej-recurso.teal{border-color:var(--teal-l)}
+    .ej-recurso.orange{border-color:var(--orange-l)}
+    .ej-recurso.pink{border-color:var(--pink-l)}
+    .ej-recurso.green{border-color:var(--green-l)}
+    .ej-recurso h4 { font-size: .9rem; font-weight: 800; color: #fff; margin-bottom: .75rem; display: flex; align-items: center; gap: .5rem; }
+    .ej-recurso p { font-size: .84rem; color: var(--muted); line-height: 1.8; }
+    .ej-recurso p strong { color: #fff; }
+    .ej-recurso ul { list-style: none; padding: 0; margin-top: .6rem; }
+    .ej-recurso ul li { font-size: .82rem; color: var(--muted); padding: .3rem 0 .3rem 1.4rem; position: relative; line-height: 1.6; }
+    .ej-recurso ul li::before { content: '✓'; position: absolute; left: 0; color: var(--green-l); font-weight: 700; }
+    /* Imagen del ejemplo */
+    .ej-img { border-radius: 14px; overflow: hidden; border: 1px solid var(--border); margin: 1.5rem 0; }
+    .ej-img img { width: 100%; max-height: 320px; object-fit: cover; display: block; }
+    .ej-nota { background: linear-gradient(135deg, rgba(245,158,11,.1), rgba(234,88,12,.07)); border: 1px solid rgba(245,158,11,.3); border-radius: 12px; padding: 1.1rem 1.4rem; font-size: .83rem; color: var(--yellow-l); margin-top: 1.5rem; line-height: 1.7; }
+    .ej-nota strong { color: #fff; }
+
+    /* ===== RECURSOS ===== */
+    .rec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; }
+    .rec { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.6rem; transition: all .3s; }
+    .rec:hover { transform: translateY(-3px); border-color: rgba(124,58,237,.3); }
+    .rec-ico { font-size: 1.9rem; margin-bottom: .9rem; display: block; }
+    .rec h4 { font-size: .88rem; font-weight: 700; color: #fff; margin-bottom: .45rem; }
+    .rec p { font-size: .8rem; color: var(--muted); margin-bottom: .9rem; line-height: 1.65; }
+    .rec a { display: inline-flex; align-items: center; gap: .4rem; color: var(--teal-l); font-size: .78rem; font-weight: 600; text-decoration: none; transition: color .2s; }
+    .rec a:hover { color: #fff; }
+
+    /* ===== PRÓXIMA CLASE ===== */
+    .prox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: center; }
+    .prox-content h3 { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 900; color: #fff; margin-bottom: .9rem; }
+    .prox-content p { color: var(--muted); font-size: .93rem; line-height: 1.8; margin-bottom: 1.5rem; }
+    .prox-temas { display: flex; flex-direction: column; gap: .7rem; }
+    .pt { display: flex; align-items: center; gap: 1rem; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: .8rem 1.2rem; }
+    .pt-num { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--purple), var(--teal)); display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 800; color: #fff; flex-shrink: 0; }
+    .pt p { font-size: .83rem; color: var(--muted); margin: 0; }
+    .pt p strong { color: #fff; }
+    .prox-img { border-radius: 18px; overflow: hidden; border: 1px solid var(--border); }
+    .prox-img img { width: 100%; height: 300px; object-fit: cover; }
+
+    /* ===== FOOTER ===== */
+    footer { background: rgba(0,0,0,.35); border-top: 1px solid var(--border); padding: 2.5rem 2rem; text-align: center; }
+    .foot-nav { display: flex; justify-content: center; gap: 1.75rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .foot-nav a { color: var(--muted); text-decoration: none; font-size: .83rem; transition: color .2s; }
+    .foot-nav a:hover { color: #fff; }
+    .foot-copy { font-size: .78rem; color: rgba(148,163,184,.45); }
+
+    /* ===== RESPONSIVE ===== */
+    @media(max-width:768px){
+      .nav-links{display:none}
+      .split,.prox-grid{grid-template-columns:1fr}
+      .split.rev{direction:ltr}
+      .prin-grid{grid-template-columns:1fr}
+      .arc-steps{grid-template-columns:1fr}
+      .arc-steps::before{display:none}
+      .regla-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-pill">Clase 11</div>
+    <div class="nav-sub">Máster en Gamificación Educativa · UNIR</div>
+  </div>
+  <div class="nav-links">
+    <a href="#problema">Problema</a>
+    <a href="#diseno">Diseño</a>
+    <a href="#storytelling">Storytelling</a>
+    <a href="#neuro">Neurodidáctica</a>
+    <a href="#actividad">Actividad 2</a>
+    <a href="#ejemplo">Ejemplo</a>
+    <a href="#recursos">Recursos</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="floats">
+    <div class="fc">🎨 Diseño visual</div>
+    <div class="fc">📖 Storytelling</div>
+    <div class="fc">🧠 Neurodidáctica</div>
+    <div class="fc">🎮 Gamificación</div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-tag">✦ Sesión 8 · Tema 6 · Parte II</div>
+    <h1>
+      <span class="l1">Presentaciones</span>
+      <span class="l2">Diseño atractivo</span>
+      <span class="l3">y storytelling</span>
+    </h1>
+    <p class="hero-desc">Domina los principios del diseño visual, la narrativa y el storytelling para crear experiencias educativas que emocionan, enganchan y generan aprendizaje significativo y duradero.</p>
+    <div class="hero-meta">
+      <span>🕐 <strong>60 minutos</strong></span>
+      <span>🎓 <strong>Máster Universitario en Gamificación Educativa</strong></span>
+      <span>👩‍🏫 <strong>Arasay Padrón Álvarez · UNIR</strong></span>
+    </div>
+    <div class="ctas">
+      <a href="#diseno" class="btn btn-a">▶ Comenzar la sesión</a>
+      <a href="#actividad" class="btn btn-b">🎯 Ir a Actividad 2</a>
+      <a href="#ejemplo" class="btn btn-c">✨ Ver ejemplo resuelto</a>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PROBLEMA -->
+<section id="problema">
+  <div class="rv">
+    <div class="sec-label">🤔 El reto de hoy</div>
+    <div class="problema">
+      <blockquote>¿Cómo integramos la narrativa y el storytelling en las presentaciones educativas para que el conocimiento no se olvide?</blockquote>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- AGENDA -->
+<section id="agenda">
+  <div class="rv">
+    <div class="sec-label">📋 Agenda</div>
+    <h2 class="sec-title">¿Qué veremos hoy?</h2>
+    <p class="sec-sub">Cinco bloques de contenido que transformarán tu forma de diseñar y narrar en el aula digital.</p>
+    <div class="agenda-grid">
+      <div class="ag"><div class="ag-num">01</div><span class="ag-icon">🎨</span><div class="ag-title">Diseño atractivo e interactivo</div></div>
+      <div class="ag"><div class="ag-num">02</div><span class="ag-icon">🎨</span><div class="ag-title">Color, tipografía y jerarquía visual</div></div>
+      <div class="ag"><div class="ag-num">03</div><span class="ag-icon">📖</span><div class="ag-title">Narrativa y storytelling educativo</div></div>
+      <div class="ag"><div class="ag-num">04</div><span class="ag-icon">🧠</span><div class="ag-title">Neurodidáctica del diseño</div></div>
+      <div class="ag"><div class="ag-num">05</div><span class="ag-icon">🎯</span><div class="ag-title">Actividad 2 y ejemplo resuelto</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- OBJETIVOS -->
+<section id="objetivos">
+  <div class="rv">
+    <div class="sec-label">🎯 Objetivos de aprendizaje</div>
+    <h2 class="sec-title">Al finalizar esta sesión serás capaz de…</h2>
+    <div class="obj-grid">
+      <div class="obj"><div class="obj-ico" style="background:rgba(124,58,237,.2)">🎨</div><div><h4>Aplicar principios de diseño visual</h4><p>Dominar la jerarquía visual, la regla 6×6, el uso estratégico del color y la tipografía para crear presentaciones claras y atractivas.</p></div></div>
+      <div class="obj"><div class="obj-ico" style="background:rgba(8,145,178,.2)">📖</div><div><h4>Construir narrativas educativas</h4><p>Estructurar el contenido siguiendo un arco narrativo que genere tensión, curiosidad y resolución, transformando datos en historias memorables.</p></div></div>
+      <div class="obj"><div class="obj-ico" style="background:rgba(234,88,12,.2)">🧠</div><div><h4>Integrar principios neurodidácticos</h4><p>Aplicar conocimientos sobre la memoria, la emoción y la atención para diseñar materiales que el cerebro procesa y retiene con mayor eficacia.</p></div></div>
+      <div class="obj"><div class="obj-ico" style="background:rgba(5,150,105,.2)">🎮</div><div><h4>Crear recursos multimedia gamificados</h4><p>Diseñar y editar imágenes, audios y recursos digitales integrados en una experiencia gamificada coherente y pedagógicamente sólida.</p></div></div>
+      <div class="obj"><div class="obj-ico" style="background:rgba(219,39,119,.2)">⚖️</div><div><h4>Usar la IA de forma crítica y ética</h4><p>Generar recursos con IA generativa, evaluando críticamente los resultados y citándolos correctamente según las pautas académicas.</p></div></div>
+      <div class="obj"><div class="obj-ico" style="background:rgba(217,119,6,.2)">🔍</div><div><h4>Curar contenidos digitales de calidad</h4><p>Aplicar estrategias de búsqueda avanzada para seleccionar recursos pertinentes, fiables y legalmente adecuados para el aula.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DISEÑO VISUAL -->
+<section id="diseno">
+  <div class="rv">
+    <div class="sec-label">🎨 Diseño atractivo e interactivo</div>
+    <h2 class="sec-title">Los principios que transforman una diapositiva en una experiencia</h2>
+    <p class="sec-sub">El diseño visual no es decoración: es arquitectura del aprendizaje. Cada decisión estética tiene una consecuencia cognitiva en quien aprende.</p>
+
+    <div class="quote">
+      <blockquote>El cerebro procesa las imágenes 60.000 veces más rápido que el texto. Un diseño bien pensado no solo comunica: activa, emociona y ancla el conocimiento en la memoria a largo plazo.</blockquote>
+      <cite>— Principio de la doble codificación, Allan Paivio (1971)</cite>
+    </div>
+
+    <!-- Imagen full-width de gamificación colorida -->
+    <div style="border-radius:18px;overflow:hidden;border:1px solid var(--border);margin-bottom:2.5rem" class="rv">
+      <img src="images/gamification_ai_classroom.png" alt="Diseño gamificado en el aula" style="width:100%;max-height:380px;object-fit:cover;display:block" />
+    </div>
+
+    <div class="prin-grid rv">
+      <div class="prin">
+        <div class="prin-num" style="color:rgba(124,58,237,.4)">01</div>
+        <h4>Organización lógica y jerarquía</h4>
+        <p>La información debe estar estructurada jerárquicamente para que el ojo del espectador sepa siempre dónde mirar primero, segundo y tercero. Sin jerarquía, todo compite y nada gana.</p>
+        <ul>
+          <li>Título → Subtítulo → Cuerpo → Detalle</li>
+          <li>Agrupar información en bloques con títulos guía</li>
+          <li>Dividir temas complejos en varias diapositivas</li>
+          <li>Un solo mensaje principal por diapositiva</li>
+          <li>Usar el espacio en blanco como elemento activo</li>
+        </ul>
+      </div>
+      <div class="prin">
+        <div class="prin-num" style="color:rgba(8,145,178,.4)">02</div>
+        <h4>Tipografía y legibilidad</h4>
+        <p>La tipografía comunica antes de que se lea una sola palabra. El tipo de letra, su tamaño y su peso transmiten jerarquía, emoción y credibilidad de forma inmediata y subconsciente.</p>
+        <ul>
+          <li>Fuentes sans-serif para mayor claridad en pantalla</li>
+          <li>Tamaño mínimo: 24pt texto, 36pt títulos</li>
+          <li>Máximo 2 familias tipográficas por presentación</li>
+          <li>Resaltar conceptos clave en negrita o color</li>
+          <li>Interlineado 1.5 para facilitar la lectura</li>
+        </ul>
+      </div>
+      <div class="prin">
+        <div class="prin-num" style="color:rgba(234,88,12,.4)">03</div>
+        <h4>Elementos visuales e iconografía</h4>
+        <p>Las imágenes, gráficos e iconos no son adornos: son atajos cognitivos que permiten al cerebro procesar conceptos complejos en milisegundos. Cada imagen debe ganarse su espacio.</p>
+        <ul>
+          <li>Imágenes de alta calidad coherentes con el mensaje</li>
+          <li>Gráficos para representar datos y procesos</li>
+          <li>Iconos consistentes en estilo y tamaño</li>
+          <li>Evitar imágenes genéricas o de banco de fotos obvias</li>
+          <li>Infografías para síntesis de contenido complejo</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Regla 6x6 -->
+    <div class="regla rv">
+      <h3>⚡ La regla 6×6: el antídoto contra el "Death by PowerPoint"</h3>
+      <p style="color:var(--muted);font-size:.88rem;line-height:1.7">Una de las reglas más poderosas del diseño de presentaciones educativas. Simple, memorable y transformadora.</p>
+      <div class="regla-grid">
+        <div class="regla-item">
+          <div class="rn">6</div>
+          <p><strong style="color:#fff">Máximo 6 palabras por línea.</strong> Obliga a sintetizar, a elegir solo lo esencial. Si no cabe en 6 palabras, no pertenece a la diapositiva: pertenece a tu discurso oral.</p>
+        </div>
+        <div class="regla-item">
+          <div class="rn">6</div>
+          <p><strong style="color:#fff">Máximo 6 líneas por diapositiva.</strong> Cada diapositiva es un cartel, no un documento. Si necesitas más líneas, necesitas más diapositivas.</p>
+        </div>
+      </div>
+      <div style="margin-top:1.25rem;padding:.9rem 1.1rem;background:rgba(255,255,255,.04);border-radius:10px;font-size:.83rem;color:var(--muted);line-height:1.7">
+        💡 <strong style="color:#fff">La regla de oro:</strong> La diapositiva apoya tu discurso, no lo sustituye. Si el alumno puede leer la presentación y no necesitarte, has fallado como diseñador pedagógico.
+      </div>
+    </div>
+
+    <!-- Color -->
+    <div class="rv" style="margin-top:3rem">
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.55rem;color:#fff;margin-bottom:.75rem">El color como lenguaje pedagógico</h3>
+      <p style="color:var(--muted);font-size:.93rem;margin-bottom:2rem;line-height:1.8">El color no es estético: es semántico. Cada color activa respuestas emocionales y cognitivas específicas en el cerebro. Usarlo de forma estratégica es una competencia docente de primer orden.</p>
+
+      <!-- Imagen color theory -->
+      <div class="split rv">
+        <div class="split-text">
+          <h3>Psicología del color en el aula</h3>
+          <p>Los colores cálidos (naranja, rojo, amarillo) activan la atención de forma instintiva. Los fríos (azul, verde, morado) generan confianza, calma y concentración. Elegir la paleta correcta no es una decisión estética: es una decisión pedagógica.</p>
+          <p>La regla de los <strong>3+2</strong>: máximo 3 tonos principales y 2 secundarios. Más colores generan caos visual y dispersan la atención. Menos colores generan monotonía. El equilibrio es la clave.</p>
+          <div class="chips">
+            <span class="chip p">3 colores principales</span>
+            <span class="chip t">2 colores de énfasis</span>
+            <span class="chip o">Contraste WCAG 4.5:1</span>
+            <span class="chip g">Consistencia total</span>
+          </div>
+        </div>
+        <div class="split-img">
+          <img src="images/color_theory.jpg" alt="Psicología del color en diseño educativo" />
+        </div>
+      </div>
+
+      <div class="color-grid rv">
+        <div class="cc">
+          <div class="swatch" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">Paleta principal</div>
+          <h4>Colores primarios (máx. 3 tonos)</h4>
+          <p>Define la identidad visual de tu presentación. Elige colores que representen la emoción que quieres evocar: azules para confianza, verdes para crecimiento, morados para creatividad.</p>
+        </div>
+        <div class="cc">
+          <div class="swatch" style="background:linear-gradient(135deg,#ea580c,#f59e0b)">Énfasis</div>
+          <h4>Colores cálidos para destacar (máx. 2)</h4>
+          <p>Los colores cálidos activan la atención de forma instintiva. Úsalos exclusivamente para los puntos más importantes. Si todo está destacado, nada lo está.</p>
+        </div>
+        <div class="cc">
+          <div class="swatch" style="background:linear-gradient(135deg,#1e293b,#334155)">Contraste</div>
+          <h4>Contraste texto-fondo</h4>
+          <p>La legibilidad es no negociable. Ratio de contraste mínimo recomendado por WCAG: 4.5:1 para texto normal. Texto oscuro sobre fondo claro o texto claro sobre fondo oscuro.</p>
+        </div>
+        <div class="cc">
+          <div class="swatch" style="background:linear-gradient(135deg,#059669,#0891b2)">Coherencia</div>
+          <h4>Consistencia a lo largo de la presentación</h4>
+          <p>Usa siempre el mismo color para el mismo tipo de elemento. La consistencia genera confianza cognitiva y facilita la navegación visual del contenido.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tipografía con imagen -->
+    <div class="split rv" style="margin-top:3rem">
+      <div class="split-text">
+        <h3>Jerarquía tipográfica: el mapa de lectura</h3>
+        <p>La jerarquía tipográfica es el sistema que guía el ojo del lector a través del contenido en el orden en que queremos que lo procese. No es opcional: es la arquitectura invisible de toda comunicación visual.</p>
+        <p>Un buen sistema tipográfico tiene al menos <strong>tres niveles</strong>: el título (H1) que captura la atención, el subtítulo (H2) que contextualiza, y el cuerpo de texto que desarrolla. Cada nivel debe ser visualmente distinguible a simple vista.</p>
+        <p>En el contexto educativo, la jerarquía tipográfica tiene una función pedagógica adicional: <strong>señala qué es más importante</strong>, ayudando al estudiante a construir su esquema mental del contenido antes de procesarlo en profundidad.</p>
+        <div class="chips">
+          <span class="chip p">H1: Título principal</span>
+          <span class="chip t">H2: Subtítulo</span>
+          <span class="chip o">H3: Sección</span>
+          <span class="chip">Cuerpo: 24pt mínimo</span>
+        </div>
+      </div>
+      <div class="split-img">
+        <img src="images/typography_hierarchy.png" alt="Jerarquía tipográfica" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- STORYTELLING -->
+<section id="storytelling">
+  <div class="rv">
+    <div class="sec-label">📖 Narrativa y storytelling</div>
+    <h2 class="sec-title">El arte de convertir contenido en historia</h2>
+    <p class="sec-sub">El storytelling no es un recurso retórico: es la tecnología más antigua y eficaz que existe para transferir conocimiento entre mentes humanas.</p>
+
+    <div class="split rv">
+      <div class="split-text">
+        <h3>¿Por qué el cerebro aprende mejor con historias?</h3>
+        <p>Cuando escuchamos datos, se activan dos áreas del cerebro: las de procesamiento del lenguaje. Cuando escuchamos una historia, se activan <strong>hasta siete áreas cerebrales simultáneamente</strong>, incluyendo las áreas motoras, sensoriales y emocionales. La historia no solo informa: hace vivir.</p>
+        <p>Este fenómeno, conocido como <strong>"acoplamiento neuronal"</strong> (neural coupling), fue documentado por Uri Hasson en Princeton: el cerebro del narrador y el del oyente se sincronizan cuando hay una historia de por medio. Literalmente, pensamos juntos.</p>
+        <p>Para la educación, esto tiene implicaciones revolucionarias: <strong>un contenido narrado se recuerda hasta 22 veces más</strong> que el mismo contenido presentado en formato de lista o datos aislados (Jerome Bruner, 1986).</p>
+      </div>
+      <div class="split-img">
+        <img src="images/storytelling_classroom.jpeg" alt="Storytelling en el aula" />
+      </div>
+    </div>
+
+    <div class="quote rv">
+      <blockquote>Las historias son el mecanismo de transmisión del conocimiento más antiguo de la humanidad. Antes de los libros, antes de la escritura, antes de las aulas, había historias alrededor del fuego. El aula del siglo XXI no puede ignorar lo que el cerebro humano lleva 200.000 años haciendo.</blockquote>
+      <cite>— Adaptado de Jerome Bruner, "Actual Minds, Possible Worlds" (1986)</cite>
+    </div>
+
+    <!-- Arco narrativo -->
+    <div class="arc-box rv">
+      <h3>🏛️ El arco narrativo en la presentación educativa</h3>
+      <p>Toda gran historia —y toda gran clase— sigue una estructura narrativa que genera tensión, mantiene la atención y produce satisfacción al resolverse. Aristóteles lo llamó "principio, nudo y desenlace". Nosotros lo llamamos diseño pedagógico.</p>
+      <div class="arc-steps">
+        <div class="arc-step"><div class="arc-dot">🌍</div><h5>Mundo ordinario</h5><p>Lo que el alumno ya sabe. Conectar con su realidad.</p></div>
+        <div class="arc-step"><div class="arc-dot">⚡</div><h5>El problema</h5><p>La pregunta detonadora que genera tensión cognitiva.</p></div>
+        <div class="arc-step"><div class="arc-dot">🗺️</div><h5>El viaje</h5><p>El contenido como aventura: conceptos, ejemplos, retos.</p></div>
+        <div class="arc-step"><div class="arc-dot">🏆</div><h5>La prueba</h5><p>La actividad donde el alumno aplica lo aprendido.</p></div>
+        <div class="arc-step"><div class="arc-dot">✨</div><h5>La transformación</h5><p>El cierre: la nueva competencia adquirida.</p></div>
+      </div>
+    </div>
+
+    <!-- Imagen arco narrativo -->
+    <div class="split rv" style="margin-top:2.5rem">
+      <div class="split-img">
+        <img src="images/narrative_arc.jpg" alt="Arco narrativo en storytelling" />
+      </div>
+      <div class="split-text">
+        <h3>El viaje del héroe aplicado a la gamificación</h3>
+        <p>El modelo del Viaje del Héroe de Joseph Campbell no es solo una estructura narrativa: es el esqueleto de toda experiencia gamificada bien diseñada. Los videojuegos más exitosos del mundo lo usan de forma consciente.</p>
+        <p>En el aula gamificada, el alumno parte de un <strong>mundo ordinario</strong> (sus conocimientos previos), recibe una <strong>llamada a la aventura</strong> (el reto o misión de la actividad), encuentra <strong>mentores y aliados</strong> (el docente, los compañeros, los recursos), supera <strong>pruebas y obstáculos</strong> y regresa <strong>transformado</strong> con el nuevo conocimiento integrado.</p>
+        <div class="chips">
+          <span class="chip p">Mundo ordinario</span>
+          <span class="chip t">Llamada a la aventura</span>
+          <span class="chip o">Pruebas y retos</span>
+          <span class="chip g">Transformación</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 técnicas -->
+    <div class="rv" style="margin-top:3rem">
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.55rem;color:#fff;margin-bottom:.65rem">6 técnicas de storytelling para el aula digital</h3>
+      <p style="color:var(--muted);font-size:.9rem;margin-bottom:2rem;line-height:1.7">Cada técnica tiene su momento y su propósito pedagógico. Combinarlas es el arte del docente narrador.</p>
+      <div class="tec-grid">
+        <div class="tec"><span class="tec-ico">🦸</span><h4>El viaje del héroe (Joseph Campbell)</h4><p>El alumno es el héroe. El contenido es el mapa de su aventura. Cada sesión lo lleva desde el mundo ordinario hasta el mundo extraordinario y lo transforma.</p><div class="tec-ex">"Hoy eres un diseñador instruccional que debe salvar a su clase del aburrimiento. Tu misión: crear una presentación que nadie pueda ignorar."</div></div>
+        <div class="tec"><span class="tec-ico">❓</span><h4>La pregunta detonadora (cliffhanger)</h4><p>Empezar con una pregunta que no puede responderse sin el contenido de la sesión. Genera tensión cognitiva que el cerebro necesita resolver.</p><div class="tec-ex">"¿Por qué el 80% de las presentaciones académicas se olvidan en menos de 24 horas? La respuesta cambiará cómo diseñas para siempre."</div></div>
+        <div class="tec"><span class="tec-ico">🔢</span><h4>El dato sorprendente</h4><p>Un dato estadístico inesperado o contraintuitivo activa el sistema de alerta del cerebro y genera una necesidad inmediata de comprender.</p><div class="tec-ex">"El 65% de los estudiantes universitarios no recuerda el contenido de una clase 24 horas después. Con una historia, ese porcentaje cae al 5%."</div></div>
+        <div class="tec"><span class="tec-ico">👤</span><h4>El caso real o persona concreta</h4><p>El cerebro empatiza con personas, no con conceptos abstractos. Anclar el contenido en la historia de una persona real activa la empatía y facilita la transferencia.</p><div class="tec-ex">"María tiene 15 años, aprende mejor con imágenes y se desconecta a los 7 minutos. ¿Cómo diseñarías su clase de historia?"</div></div>
+        <div class="tec"><span class="tec-ico">🔄</span><h4>La analogía y la metáfora</h4><p>Conectar lo desconocido con lo conocido a través de una imagen mental poderosa. Una buena metáfora comprime horas de explicación en segundos de comprensión.</p><div class="tec-ex">"Diseñar una presentación sin jerarquía visual es como construir una ciudad sin señales de tráfico: todo el mundo se mueve, pero nadie llega."</div></div>
+        <div class="tec"><span class="tec-ico">🎭</span><h4>El conflicto y la tensión narrativa</h4><p>Sin conflicto no hay historia. En educación, el conflicto es la disonancia cognitiva: el momento en que lo que el alumno creía se enfrenta a evidencia que lo contradice.</p><div class="tec-ex">"Creías que más información en la diapositiva = más aprendizaje. Los datos dicen exactamente lo contrario. Veamos por qué."</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- NEURODIDÁCTICA -->
+<section id="neuro">
+  <div class="rv">
+    <div class="sec-label">🧠 Neurodidáctica del diseño</div>
+    <h2 class="sec-title">Lo que la neurociencia nos dice sobre el aprendizaje visual</h2>
+    <p class="sec-sub">Diseñar para el cerebro no es una metáfora: es una disciplina. Conocer cómo funciona la memoria, la atención y la emoción nos hace mejores diseñadores pedagógicos.</p>
+
+    <!-- Imagen gamification colorful -->
+    <div style="border-radius:18px;overflow:hidden;border:1px solid var(--border);margin-bottom:2.5rem" class="rv">
+      <img src="images/gamification_colorful.webp" alt="Gamificación y neurodidáctica" style="width:100%;max-height:340px;object-fit:cover;display:block" />
+    </div>
+
+    <div class="neuro-grid rv">
+      <div class="nc"><span class="nc-ico">⚡</span><div class="nc-stat" style="color:var(--yellow-l)">7±2</div><h4>Capacidad de la memoria de trabajo</h4><p>El cerebro solo puede procesar 7 (±2) elementos simultáneamente. Más información en pantalla no es más aprendizaje: es sobrecarga cognitiva.</p></div>
+      <div class="nc"><span class="nc-ico">🎯</span><div class="nc-stat" style="color:var(--teal-l)">8 seg</div><h4>Ventana de atención inicial</h4><p>Tienes 8 segundos para captar la atención de tu audiencia antes de que el cerebro decida si vale la pena invertir recursos cognitivos en lo que ve.</p></div>
+      <div class="nc"><span class="nc-ico">❤️</span><div class="nc-stat" style="color:var(--pink-l)">22×</div><h4>Potencia del storytelling</h4><p>El contenido narrado como historia se recuerda hasta 22 veces más que el mismo contenido en formato de lista o datos aislados (Bruner, 1986).</p></div>
+      <div class="nc"><span class="nc-ico">🖼️</span><div class="nc-stat" style="color:var(--orange-l)">60K×</div><h4>Velocidad de procesamiento visual</h4><p>El cerebro procesa imágenes 60.000 veces más rápido que texto. Una imagen bien elegida comunica en milisegundos lo que un párrafo tarda segundos.</p></div>
+      <div class="nc"><span class="nc-ico">🔄</span><div class="nc-stat" style="color:var(--green-l)">3×</div><h4>Efecto de la repetición espaciada</h4><p>Revisar un concepto 3 veces con intervalos crecientes multiplica la retención a largo plazo. El diseño debe facilitar la revisión.</p></div>
+      <div class="nc"><span class="nc-ico">🎵</span><div class="nc-stat" style="color:var(--purple-l)">+40%</div><h4>Impacto del audio en el aprendizaje</h4><p>La combinación de audio y visual aumenta la retención hasta un 40% respecto al visual solo (Mayer, 2009). El podcast educativo no es un lujo: es estrategia.</p></div>
+    </div>
+
+    <div class="quote rv" style="margin-top:2rem">
+      <blockquote>No enseñamos contenidos: creamos condiciones para que el cerebro los construya. El diseño visual, la narrativa y la emoción no son complementos del aprendizaje: son sus condiciones de posibilidad.</blockquote>
+      <cite>— Principio de la neurodidáctica aplicada al diseño instruccional</cite>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ACTIVIDAD 2 -->
+<section id="actividad">
+  <div class="rv">
+    <div class="sec-label">🎯 Actividad 2</div>
+    <div class="act-header">
+      <div class="act-badge">⏱ Actividad evaluable · Entrega programada</div>
+      <h2>Diseñando recursos multimedia para una experiencia gamificada</h2>
+      <p>Esta actividad integra todas las competencias trabajadas en el módulo: diseño visual, narrativa, curación de contenidos, creación de recursos multimedia (imagen y audio) y uso crítico de la IA generativa. El resultado es un banco de recursos completo para una experiencia gamificada real en tu aula.</p>
+      <div class="chips">
+        <span class="chip o">Máx. 6 páginas + 2 de IA</span>
+        <span class="chip t">Calibri 12 · Interlineado 1.5</span>
+        <span class="chip p">Citas APA 7ª edición</span>
+        <span class="chip g">IA permitida y recomendada</span>
+      </div>
+    </div>
+
+    <h3 style="font-family:'Playfair Display',serif;font-size:1.45rem;color:#fff;margin-bottom:1.25rem">¿Qué debes hacer? Las 7 tareas</h3>
+    <div class="tarea-grid">
+      <div class="tarea"><div class="tarea-num" style="color:var(--purple-l)">Tarea 01</div><h4>Diseña tu actividad gamificada</h4><p>Describe con claridad la actividad que quieres realizar en el aula y la estructura de tu gamificación: mecánicas, dinámicas, narrativa y progresión. Define los recursos que necesitarás y en qué formato multimedia los crearás.</p><div class="tip">💡 Usa el viaje del héroe como estructura narrativa de tu gamificación.</div></div>
+      <div class="tarea"><div class="tarea-num" style="color:var(--teal-l)">Tarea 02</div><h4>Búsqueda avanzada y curación</h4><p>Aplica estrategias de búsqueda avanzada para seleccionar recursos digitales de calidad. Crea un banco de recursos organizado con una herramienta de curación (Wakelet, Symbaloo, Padlet, etc.).</p><div class="tip">💡 Verifica siempre la licencia de uso (Creative Commons) de cada recurso.</div></div>
+      <div class="tarea"><div class="tarea-num" style="color:var(--orange-l)">Tarea 03</div><h4>Crea y edita recursos visuales</h4><p>Diseña y edita imágenes para tu actividad: escenarios temáticos, personajes, fichas de actividades. Puedes usar IA para generarlas. Cada recurso debe tener un propósito pedagógico claro.</p><div class="tip">💡 Canva, Adobe Firefly, Midjourney o DALL-E son excelentes opciones.</div></div>
+      <div class="tarea"><div class="tarea-num" style="color:var(--pink-l)">Tarea 04</div><h4>Graba y edita recursos de audio</h4><p>Crea pistas de audio para tu actividad: introducción al tema como anuncio, pistas para resolver tareas, enunciados de retos. Puedes usar IA para generar guiones y voces.</p><div class="tip">💡 ElevenLabs, Murf.ai o Audacity son herramientas muy accesibles para docentes.</div></div>
+      <div class="tarea"><div class="tarea-num" style="color:var(--green-l)">Tarea 05</div><h4>Completa el banco de recursos</h4><p>Añade todos los recursos digitales creados al banco. Debe incluir al menos un recurso de cada tipo (visual, audio, curado). Cada recurso necesita: captura de pantalla, enlace público y cita APA.</p><div class="tip">💡 Organiza el banco por tipo de recurso y por momento de uso en la actividad.</div></div>
+      <div class="tarea"><div class="tarea-num" style="color:var(--yellow-l)">Tarea 06</div><h4>Redacta la conclusión y reflexión</h4><p>Justifica la elección de herramientas y estrategias en relación con los estilos de aprendizaje. Explica cómo los recursos creados facilitan la accesibilidad y la motivación del estudiantado.</p><div class="tip">💡 Conecta tus decisiones con teorías pedagógicas (Mayer, Paivio, Gardner).</div></div>
+      <div class="tarea"><div class="tarea-num" style="color:var(--teal-l)">Tarea 07</div><h4>Documenta el uso de la IA</h4><p>En 2 páginas adicionales, documenta cómo usaste la IA: qué prompts generaste, qué resultados obtuviste, qué evaluación crítica hiciste y cómo los usaste de forma ética.</p><div class="tip">💡 Incluye capturas de tus conversaciones con la IA y reflexiona sobre sus limitaciones.</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- EJEMPLO RESOLUCIÓN -->
+<section id="ejemplo">
+  <div class="rv">
+    <div class="sec-label">✨ Ejemplo de resolución</div>
+    <div class="ej-wrap">
+      <div class="ej-badge">⭐ Nivel sobresaliente · Referencia de calidad</div>
+      <h2>"La Odisea del Conocimiento" — Escape Room Digital</h2>
+      <p>A continuación se presenta un ejemplo de cómo diseñar y crear los recursos multimedia para una experiencia gamificada de nivel sobresaliente. Observa las decisiones pedagógicas, la coherencia narrativa y la calidad de los recursos. Úsalo como referencia —no como plantilla para copiar, sino como modelo para superar.</p>
+
+      <!-- Imagen del escape room -->
+      <div class="ej-img">
+        <img src="images/escape_room_design.jpg" alt="Escape room digital educativo" />
+      </div>
+
+      <div class="ej-recurso purple">
+        <h4>🎮 Diseño de la experiencia gamificada</h4>
+        <p><strong>Nombre:</strong> "La Odisea del Conocimiento" — Escape Room Digital para Historia del Arte (4.º ESO).</p>
+        <p style="margin-top:.75rem"><strong>Narrativa:</strong> Los estudiantes son arqueólogos digitales que han descubierto una sala sellada en el Museo del Prado. Para abrirla, deben resolver 5 retos relacionados con los movimientos artísticos del siglo XX. Cada reto desbloqueado revela una pista del código final. El equipo que descifre el código completo en menos tiempo "salva" la obra de arte.</p>
+        <p style="margin-top:.75rem"><strong>Estructura gamificada:</strong> Equipos · 5 retos progresivos · Sistema de pistas (máx. 3 por equipo) · Tabla de clasificación en tiempo real con Mentimeter · Badge digital "Arqueólogo del Arte" en Genially al completar la misión.</p>
+        <p style="margin-top:.75rem"><strong>Conexión con el arco narrativo:</strong> Mundo ordinario (conocimientos previos de arte) → Llamada a la aventura (la sala sellada) → Pruebas (los 5 retos) → Transformación (nueva comprensión del arte del siglo XX).</p>
+      </div>
+
+      <div class="ej-recurso teal">
+        <h4>🖼️ Recursos visuales creados</h4>
+        <p><strong>Recurso 1 — Portada del escape room:</strong> Imagen generada con Adobe Firefly (prompt: <em>"ancient museum hall with mysterious sealed door, dramatic lighting, archaeological artifacts, digital art style, cinematic"</em>). Editada en Canva para añadir título, tipografía temática y elementos de identidad visual de la actividad.</p>
+        <p style="margin-top:.75rem"><strong>Recurso 2 — Personaje guía "Atenea":</strong> Avatar de arqueóloga generado con Midjourney, editado con fondo transparente en Remove.bg. Función pedagógica: guía narrativa que aparece en cada reto con instrucciones y pistas contextualizadas.</p>
+        <p style="margin-top:.75rem"><strong>Recurso 3 — 5 fichas de reto:</strong> Diseñadas en Canva con plantilla personalizada. Paleta: dorado, negro y terracota (evoca el mundo antiguo). Tipografía: Cinzel para títulos, Lato para cuerpo. Cada ficha incluye: número de reto, imagen de la obra de arte, pregunta, espacio de respuesta y pista visual codificada.</p>
+        <ul>
+          <li>Todas las imágenes tienen resolución mínima de 1920×1080px</li>
+          <li>Paleta de colores coherente con la narrativa temática</li>
+          <li>Cada recurso incluye enlace público y cita APA de las obras originales</li>
+          <li>Obras de arte obtenidas de Europeana (dominio público)</li>
+        </ul>
+      </div>
+
+      <!-- Imagen multimedia resources -->
+      <div class="ej-img">
+        <img src="images/multimedia_resources.jpg" alt="Creación de recursos multimedia educativos" />
+      </div>
+
+      <div class="ej-recurso orange">
+        <h4>🎙️ Recursos de audio creados</h4>
+        <p><strong>Recurso 1 — Introducción narrativa (2 min 30 seg):</strong> Guion generado con ChatGPT (prompt: <em>"Escribe una introducción narrativa de 300 palabras para un escape room de Historia del Arte, en tono de aventura arqueológica, para estudiantes de 4.º ESO"</em>). Voz generada con ElevenLabs (voz "Mateo", español neutro). Editado en Audacity: música de fondo (Pixabay, licencia libre), efectos de sonido de pasos y puerta antigua.</p>
+        <p style="margin-top:.75rem"><strong>Recurso 2 — Pista de audio para el Reto 3 (45 seg):</strong> Descripción oral de una obra de arte sin revelar el título. El estudiante debe identificarla. Generado con ElevenLabs, editado con efecto de "radio antigua" para reforzar la narrativa.</p>
+        <p style="margin-top:.75rem"><strong>Recurso 3 — Jingle de victoria (15 seg):</strong> Generado con Suno.ai (prompt: <em>"epic orchestral fanfare, 15 seconds, victory theme, suitable for educational game"</em>). Usado al desbloquear cada reto como refuerzo positivo.</p>
+        <ul>
+          <li>Todos los audios están alojados en Google Drive con enlace público</li>
+          <li>Cada audio incluye cita APA y documentación del prompt utilizado</li>
+          <li>Duración ajustada al momento de uso en la actividad</li>
+        </ul>
+      </div>
+
+      <div class="ej-recurso green">
+        <h4>📚 Banco de recursos curado</h4>
+        <p><strong>Herramienta:</strong> Wakelet — colección pública "Odisea del Conocimiento" organizada en 4 secciones: Obras de Arte (dominio público), Recursos Pedagógicos, Herramientas Digitales, y Bibliografía APA.</p>
+        <p style="margin-top:.75rem"><strong>Estrategia de búsqueda:</strong> Operadores booleanos en Google (site:edu, filetype:pdf, "Creative Commons"), búsqueda en Europeana y Wikimedia Commons para obras de dominio público, y Google Scholar para fundamentación pedagógica.</p>
+        <p style="margin-top:.75rem"><strong>Criterios de selección:</strong> Pertinencia curricular, licencia libre de derechos, calidad visual (mínimo 1200px), fuente institucional verificada (museos, universidades, organismos públicos).</p>
+      </div>
+
+      <div class="ej-recurso pink">
+        <h4>💬 Reflexión pedagógica</h4>
+        <p>La actividad integra los principios del aprendizaje multimedia de Mayer (2009) al combinar canal visual y auditivo de forma complementaria, evitando la sobrecarga cognitiva. La narrativa del escape room aplica el modelo del Viaje del Héroe (Campbell, 1949), convirtiendo al estudiante en protagonista activo de su aprendizaje.</p>
+        <p style="margin-top:.75rem">La elección de Wakelet como herramienta de curación responde a su interfaz visual e intuitiva, que facilita la accesibilidad para estudiantes con diferentes estilos de aprendizaje (Gardner, 1983). Los recursos visuales creados con IA fueron evaluados críticamente: se descartaron aquellos con sesgos de representación cultural y se priorizaron los que reflejaban diversidad.</p>
+      </div>
+
+      <div class="ej-nota">
+        <strong>⚠️ Nota importante:</strong> Este ejemplo es una guía de referencia para entender el nivel de profundidad, coherencia narrativa y calidad de recursos esperados. Tu actividad debe ser <strong>original, contextualizada en tu asignatura real</strong> y reflejar tus propias decisiones pedagógicas. Copiar este ejemplo sería una oportunidad perdida de aprendizaje genuino.
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- RECURSOS -->
+<section id="recursos">
+  <div class="rv">
+    <div class="sec-label">🔗 Recursos de apoyo</div>
+    <h2 class="sec-title">Todo lo que necesitas para brillar</h2>
+    <div class="rec-grid">
+      <div class="rec"><span class="rec-ico">🎨</span><h4>Canva para Educación</h4><p>Diseño visual profesional con miles de plantillas educativas. Versión Pro gratuita para docentes.</p><a href="https://www.canva.com/education/" target="_blank">→ Acceder a Canva Edu</a></div>
+      <div class="rec"><span class="rec-ico">🤖</span><h4>Adobe Firefly</h4><p>Generación de imágenes con IA de Adobe. Entrenado con imágenes con licencia: uso ético garantizado.</p><a href="https://firefly.adobe.com/" target="_blank">→ Acceder a Firefly</a></div>
+      <div class="rec"><span class="rec-ico">🎙️</span><h4>ElevenLabs</h4><p>Generación de voz realista en español. Ideal para crear narraciones y podcasts educativos con IA.</p><a href="https://elevenlabs.io/" target="_blank">→ Acceder a ElevenLabs</a></div>
+      <div class="rec"><span class="rec-ico">🎵</span><h4>Suno.ai</h4><p>Generación de música y jingles con IA. Crea bandas sonoras para tus actividades gamificadas.</p><a href="https://suno.ai/" target="_blank">→ Acceder a Suno</a></div>
+      <div class="rec"><span class="rec-ico">📚</span><h4>Wakelet</h4><p>Herramienta de curación de contenidos visual e intuitiva. Perfecta para crear bancos de recursos compartibles.</p><a href="https://wakelet.com/" target="_blank">→ Acceder a Wakelet</a></div>
+      <div class="rec"><span class="rec-ico">🖼️</span><h4>Europeana</h4><p>Millones de obras de arte, fotografías y documentos históricos en dominio público. Fuente perfecta para actividades culturales.</p><a href="https://www.europeana.eu/" target="_blank">→ Acceder a Europeana</a></div>
+      <div class="rec"><span class="rec-ico">🎧</span><h4>Audacity</h4><p>Editor de audio gratuito y profesional. Ideal para editar podcasts, añadir música de fondo y efectos de sonido.</p><a href="https://www.audacityteam.org/" target="_blank">→ Descargar Audacity</a></div>
+      <div class="rec"><span class="rec-ico">✂️</span><h4>Remove.bg</h4><p>Elimina el fondo de cualquier imagen en segundos con IA. Esencial para crear personajes y elementos para tus actividades.</p><a href="https://www.remove.bg/" target="_blank">→ Acceder a Remove.bg</a></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PRÓXIMA CLASE -->
+<section id="proxima">
+  <div class="rv">
+    <div class="sec-label">🚀 Próxima sesión</div>
+    <div class="prox-grid">
+      <div class="prox-content">
+        <h3>Tema 7: Plataformas para la creación de experiencias de aprendizaje gamificadas</h3>
+        <p>En la próxima sesión daremos el salto de los recursos individuales a las plataformas completas. Aprenderemos a seleccionar, comparar y usar las plataformas más potentes para diseñar experiencias de aprendizaje gamificadas de principio a fin.</p>
+        <div class="prox-temas">
+          <div class="pt"><div class="pt-num">1</div><p><strong>Plataformas de gamificación completa:</strong> Classcraft, Breakout EDU, Genially y sus ecosistemas</p></div>
+          <div class="pt"><div class="pt-num">2</div><p><strong>Criterios de selección pedagógica:</strong> cómo elegir la plataforma adecuada para cada contexto y objetivo</p></div>
+          <div class="pt"><div class="pt-num">3</div><p><strong>Diseño de experiencias end-to-end:</strong> de la narrativa al producto final en una sola plataforma</p></div>
+          <div class="pt"><div class="pt-num">4</div><p><strong>Presentación de trabajos:</strong> revisión de los mejores proyectos de la Actividad 2</p></div>
+        </div>
+      </div>
+      <div class="prox-img">
+        <img src="images/gamification_design.jpeg" alt="Plataformas de gamificación educativa" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-nav">
+    <a href="#problema">Problema</a>
+    <a href="#diseno">Diseño visual</a>
+    <a href="#storytelling">Storytelling</a>
+    <a href="#neuro">Neurodidáctica</a>
+    <a href="#actividad">Actividad 2</a>
+    <a href="#ejemplo">Ejemplo</a>
+    <a href="#recursos">Recursos</a>
+  </div>
+  <div class="foot-copy">Clase 11 · Tema 6 Parte II · Máster en Gamificación Educativa · UNIR · Arasay Padrón Álvarez</div>
+</footer>
+
+<script>
+  // Barra de progreso
+  window.addEventListener('scroll', () => {
+    const p = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('progress').style.width = p + '%';
+  });
+  // Scroll reveal
+  const obs = new IntersectionObserver(entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('on'); }), { threshold: 0.1 });
+  document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+  // Nav activo
+  const secs = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    secs.forEach(s => { if(window.scrollY >= s.offsetTop - 100) cur = s.id; });
+    links.forEach(l => { l.classList.remove('active'); if(l.getAttribute('href') === '#' + cur) l.classList.add('active'); });
+  });
+</script>
+</body>
+</html>
